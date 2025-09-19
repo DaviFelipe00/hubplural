@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard de Análise de Custos</title>
+    <title>Dashboard Hub Plural - Análise Completa</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -16,20 +16,27 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .chart-container { position: relative; height: 100%; width: 100%; }
-        /* Animação para o botão de refresh */
         @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
         .spinning { animation: spin 1s linear infinite; }
+        .tab-button.active { background-color: #7c3aed; color: white; }
     </style>
 </head>
 <body class="bg-slate-900 text-slate-300">
 
 <main class="p-6 lg:p-10 max-w-7xl mx-auto">
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+    <div id="status-messages" class="mb-4"></div>
+
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
         <div>
-            <h1 class="text-3xl font-bold text-white">Análise de Custos e Economia</h1>
+            <h1 class="text-3xl font-bold text-white">Dashboard Hub Plural</h1>
             <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
+            <p id="last-update" class="text-slate-500 text-sm mt-1">Última atualização: --</p>
         </div>
         <div class="flex items-center gap-4 mt-4 sm:mt-0">
+            <div class="flex items-center gap-2">
+                <input type="checkbox" id="auto-refresh" class="rounded text-purple-500 focus:ring-purple-500" checked>
+                <label for="auto-refresh" class="text-sm text-slate-400">Auto-atualizar (5min)</label>
+            </div>
             <button id="refresh-button" class="flex items-center gap-2 px-4 py-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">
                 <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
                 <span>Atualizar</span>
@@ -37,247 +44,292 @@
         </div>
     </header>
 
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Custo Original</h3>
-                    <p id="kpi-original" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="flag-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Custo Final</h3>
-                    <p id="kpi-final" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Economia Realizada</h3>
-                    <p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Total de Itens</h3>
-                    <p id="kpi-servicos" class="text-2xl font-semibold text-white mt-1">0</p>
-                </div>
-            </div>
+    <div class="mb-8 border-b border-slate-700">
+        <nav class="flex space-x-2" aria-label="Tabs">
+            <button id="tab-custos" class="tab-button active px-4 py-2 font-medium text-sm rounded-t-lg">Análise de Custos</button>
+            <button id="tab-servicos" class="tab-button px-4 py-2 font-medium text-sm rounded-t-lg text-slate-400 hover:bg-slate-800">Clientes Hub</button>
+        </nav>
+    </div>
+
+    <div id="content-custos">
+        <div class="text-center py-12">
+            <ion-icon name="hourglass-outline" class="text-4xl text-slate-500 spinning"></ion-icon>
+            <p class="text-slate-400 mt-2">Carregando dados de custos...</p>
         </div>
     </div>
 
-    <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10">
-        <div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col">
-            <h3 class="font-semibold text-white mb-4">Comparativo de Custos (Geral)</h3>
-            <div class="chart-container">
-                <canvas id="chartComparativoGeral"></canvas>
-            </div>
-        </div>
-        <div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col">
-            <h3 class="font-semibold text-white mb-4">Economia por Fornecedor</h3>
-            <div class="chart-container">
-                <canvas id="chartEconomiaFornecedor"></canvas>
-            </div>
-        </div>
-    </div>
-
-    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10">
-        <h3 class="font-semibold text-white mb-4">Detalhamento dos Serviços</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="border-b border-slate-700">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Original</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Final</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Economia</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-servicos" class="divide-y divide-slate-700">
-                    </tbody>
-            </table>
+    <div id="content-servicos" style="display: none;">
+        <div class="text-center py-12">
+            <ion-icon name="hourglass-outline" class="text-4xl text-slate-500 spinning"></ion-icon>
+            <p class="text-slate-400 mt-2">Carregando dados de serviços...</p>
         </div>
     </div>
 </main>
 
+<template id="template-custos">
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Custo Original</h3><p id="kpi-custo-original" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="flag-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Custo Final</h3><p id="kpi-custo-final" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Economia Realizada</h3><p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Total de Itens</h3><p id="kpi-itens-custo" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
+    </div>
+    <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10"><div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Comparativo de Custos (Geral)</h3><div class="chart-container"><canvas id="chartComparativoGeral"></canvas></div></div><div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Economia por Fornecedor</h3><div class="chart-container"><canvas id="chartEconomiaFornecedor"></canvas></div></div></div>
+    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><h3 class="font-semibold text-white mb-4">Detalhamento dos Custos</h3><div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b border-slate-700"><tr><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Original</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Final</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Economia</th></tr></thead><tbody id="tabela-custos" class="divide-y divide-slate-700"></tbody></table></div></div>
+</template>
+
+<template id="template-servicos">
+    <div class="mb-6 bg-slate-800/50 p-4 rounded-lg">
+        <label for="filtro-hub" class="block text-sm font-medium text-slate-400 mb-2">Filtrar por Hub:</label>
+        <select id="filtro-hub" class="w-full sm:w-1/3 bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5">
+            <option value="todos">Todos os Hubs</option>
+        </select>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-sky-600/20 text-sky-400 rounded-lg flex items-center justify-center"><ion-icon name="analytics-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Faturamento Total</h3><p id="kpi-faturamento" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-lg flex items-center justify-center"><ion-icon name="happy-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Lucro Total</h3><p id="kpi-lucro" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-amber-600/20 text-amber-400 rounded-lg flex items-center justify-center"><ion-icon name="stats-chart-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Margem de Lucro</h3><p id="kpi-margem" class="text-2xl font-semibold text-white mt-1">0,00%</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-full-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Total de Serviços</h3><p id="kpi-itens-servico" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
+    </div>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10"><div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Faturamento por Hub</h3><div class="chart-container"><canvas id="chartFaturamentoHub"></canvas></div></div><div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Lucro por Cliente</h3><div class="chart-container"><canvas id="chartLucroCliente"></canvas></div></div></div>
+    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><h3 class="font-semibold text-white mb-4">Detalhamento dos Serviços</h3><div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b border-slate-700"><tr><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Hub</th><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Cliente</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor do Serviço</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Lucro</th></tr></thead><tbody id="tabela-servicos" class="divide-y divide-slate-700"></tbody></table></div></div>
+</template>
+
 <script>
-    // URL da sua planilha publicada no formato CSV. ESSENCIAL que termine com '/pub?output=csv'
-    const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv';
-
-    const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    // ===========================================
+    // CONFIGURAÇÃO - COLE AQUI SEUS LINKS
+    // ===========================================
     
-    function setDateHeader() {
-        document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-    }
+    // PASSO 1: Cole aqui o link gerado após publicar a planilha como CSV
+    const urlPublicadaCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv"; 
+    
+    // PASSO 2: Cole aqui os GIDs das suas abas
+    const gidCustos = '366617358'; 
+    const gidServicos = '979295190';
 
-    // Função para converter valores em texto (ex: "R$ 1.234,56") para número
+    // ===========================================
+    // SISTEMA DO DASHBOARD (NÃO MODIFICAR ABAIXO)
+    // ===========================================
+    
+    // URLs finais
+    const urlCustosCSV = `${urlPublicadaCSV}&gid=${gidCustos}`;
+    const urlServicosCSV = `${urlPublicadaCSV}&gid=${gidServicos}`;
+    
+    // Variáveis globais
+    let allServicosData = [];
+    let autoRefreshTimer = null;
+    let lastUpdateTime = null;
+    const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
+    
+    // Funções utilitárias
+    const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
+    const formatarPercentual = (valor) => `${valor.toFixed(2).replace('.', ',')}%`;
     const parseCurrency = (valor) => {
         if (typeof valor !== 'string' || !valor) return 0;
-        const cleanedValue = valor.replace(/R\$\s?/, '').replace(/\./g, '').replace(/,/g, '.');
+        const cleanedValue = valor.replace(/[R$\s.]/g, '').replace(/,/g, '.');
         return parseFloat(cleanedValue) || 0;
     };
+    const setDateHeader = () => {
+        document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+        if (lastUpdateTime) {
+            document.getElementById('last-update').textContent = `Última atualização: ${lastUpdateTime.toLocaleTimeString('pt-BR')}`;
+        }
+    };
+    
+    // Sistema de mensagens
+    const showMessage = (message, type = 'info', duration = 5000) => {
+        const container = document.getElementById('status-messages');
+        const messageDiv = document.createElement('div');
+        const bgClass = type === 'error' ? 'bg-red-800 border-red-600' : 'bg-green-800 border-green-600';
+        const icon = type === 'error' ? 'alert-circle-outline' : 'checkmark-circle-outline';
+        
+        messageDiv.className = `${bgClass} text-white p-4 rounded-lg mb-4 flex items-center gap-3 border-l-4`;
+        messageDiv.innerHTML = `<ion-icon name="${icon}" class="text-xl flex-shrink-0"></ion-icon><span>${message}</span>`;
+        container.appendChild(messageDiv);
+        setTimeout(() => messageDiv.remove(), duration);
+    };
+    
+    // Função principal de busca de dados
+    async function buscarDados(url, config) {
+        if (url.includes("COLE_AQUI")) {
+            const errorMsg = `<strong>Configuração necessária:</strong> Cole o link da sua planilha publicada e os GIDs nas variáveis no topo do script.`;
+            showMessage(errorMsg, 'error', 15000);
+            return [];
+        }
 
-    async function buscarDadosDaPlanilha() {
-        if (!urlDaPlanilhaCSV) { return []; }
         try {
-            const resposta = await fetch(`${urlDaPlanilhaCSV}&t=${new Date().getTime()}`);
-            if (!resposta.ok) { throw new Error(`Falha na rede: ${resposta.statusText}`); }
-            
+            const resposta = await fetch(`${url}&t=${new Date().getTime()}`);
+            if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`);
             const dadosCSV = await resposta.text();
-             // Verifica se o link está retornando uma página HTML em vez de CSV puro
-            if (dadosCSV.trim().startsWith('<')) {
-                console.error("Erro: Os dados parecem ser HTML. Verifique se o link da planilha termina com '/pub?output=csv'");
-                alert("Erro ao carregar dados. A planilha não está no formato CSV correto. Verifique o link em 'Arquivo > Compartilhar > Publicar na web' e certifique-se de selecionar 'Valores separados por vírgula (.csv)'.");
-                return [];
-            }
+            if (dadosCSV.trim().startsWith('<')) throw new Error("Dados retornaram como HTML. Verifique se a planilha foi publicada como 'CSV'.");
+            if (!dadosCSV.trim()) return []; // Planilha vazia, retorna array vazio sem erro
 
             const linhas = dadosCSV.trim().split('\n');
+            const cabecalho = (linhas[0].match(/(".*?"|[^,]*)(?=,|$)/g) || []).map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
             
-            // Usa regex para separar o cabeçalho, tratando colunas com vírgulas
-            const cabecalho = (linhas[0].match(/(".*?"|[^,]*)(?=,|$)/g) || []).map(h => h.trim().replace(/^"|"$/g, ''));
-
-            // Função flexível para encontrar o índice da coluna pelo nome
             const encontrarIndice = (nomesPossiveis) => {
                 for (const nome of nomesPossiveis) {
-                    const index = cabecalho.findIndex(h => h.toLowerCase().trim() === nome.toLowerCase());
+                    const index = cabecalho.indexOf(nome.toLowerCase());
                     if (index !== -1) return index;
                 }
                 return -1;
             };
 
-            const indices = {
-                fornecedor: encontrarIndice(['fornecedor']),
-                unidade: encontrarIndice(['unidade']),
-                descricao: encontrarIndice(['descrição do serviço', 'descricao']),
-                custo: encontrarIndice(['custo', 'custo original']),
-                final: encontrarIndice(['custo final', 'valor retornado', 'valor retor'])
-            };
-            
-            return linhas.slice(1).map(linha => {
-                // Usa regex para separar os valores de cada linha, tratando células com vírgulas
-                const valores = linha.match(/(".*?"|[^,]*)(?=,|$)/g) || [];
-
-                const getValor = (index) => {
-                    if (index === -1 || !valores[index]) return '';
-                    return valores[index].trim().replace(/^"|"$/g, '');
-                };
-
-                return {
-                    Fornecedor: getValor(indices.fornecedor),
-                    Unidade: getValor(indices.unidade),
-                    Descricao: getValor(indices.descricao),
-                    CustoOriginal: parseCurrency(getValor(indices.custo)),
-                    CustoFinal: parseCurrency(getValor(indices.final))
-                };
-            }).filter(item => item.Fornecedor && (item.CustoOriginal > 0 || item.CustoFinal > 0 || item.Unidade)); // Garante que apenas linhas com dados sejam processadas
-
-        } catch (error) {
-            console.error("Erro detalhado ao buscar ou processar dados:", error);
-            return []; 
-        }
-    }
-
-    function calcularKPIs(dados) {
-        const custoOriginal = dados.reduce((acc, item) => acc + item.CustoOriginal, 0);
-        const custoFinal = dados.reduce((acc, item) => acc + item.CustoFinal, 0);
-        const economia = custoOriginal - custoFinal;
-        document.getElementById('kpi-original').textContent = formatarMoeda(custoOriginal);
-        document.getElementById('kpi-final').textContent = formatarMoeda(custoFinal);
-        document.getElementById('kpi-economia').textContent = formatarMoeda(economia);
-        document.getElementById('kpi-servicos').textContent = dados.length;
-    }
-
-    function renderizarGraficos(dados) {
-        const custoOriginal = dados.reduce((acc, item) => acc + item.CustoOriginal, 0);
-        const custoFinal = dados.reduce((acc, item) => acc + item.CustoFinal, 0);
-        
-        const economiaPorFornecedor = dados.reduce((acc, item) => {
-            if (item.Fornecedor) {
-                const economiaItem = item.CustoOriginal - item.CustoFinal;
-                acc[item.Fornecedor] = (acc[item.Fornecedor] || 0) + economiaItem;
+            const indices = {};
+            for (const key in config.colunas) {
+                indices[key] = encontrarIndice(config.colunas[key]);
             }
-            return acc;
-        }, {});
-        
-        const corTexto = '#9CA3AF', corGrid = '#475569';
-        const coresPizza = ['#22c55e', '#8B5CF6', '#3B82F6', '#EC4899', '#f97316', '#14b8a6', '#6366f1'];
-        
-        if (window.graficoComparativoGeral) window.graficoComparativoGeral.destroy();
-        window.graficoComparativoGeral = new Chart(document.getElementById('chartComparativoGeral'), {
-            type: 'bar',
-            data: {
-                labels: ['Custos Totais'],
-                datasets: [
-                    { label: 'Custo Original', data: [custoOriginal], backgroundColor: '#ef4444', barPercentage: 0.5 },
-                    { label: 'Custo Final', data: [custoFinal], backgroundColor: '#8B5CF6', barPercentage: 0.5 }
-                ]
-            },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y', plugins: { legend: { labels: { color: corTexto } } }, scales: { x: { ticks: { color: corTexto, callback: (v) => formatarMoeda(v) }, grid: { color: corGrid } }, y: { ticks: { color: corTexto }, grid: { display: false } } } }
-        });
 
-        if (window.graficoEconomiaFornecedor) window.graficoEconomiaFornecedor.destroy();
-        window.graficoEconomiaFornecedor = new Chart(document.getElementById('chartEconomiaFornecedor'), {
-            type: 'doughnut', 
-            data: { 
-                labels: Object.keys(economiaPorFornecedor), 
-                datasets: [{ data: Object.values(economiaPorFornecedor), backgroundColor: coresPizza, borderColor: '#1e293b' }] 
-            },
-            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: corTexto } } } }
-        });
-    }
-
-    function preencherTabela(dados) {
-        const tabelaCorpo = document.getElementById('tabela-servicos');
-        tabelaCorpo.innerHTML = ''; // Limpa a tabela antes de preencher
-        dados.forEach(item => {
-            const economia = item.CustoOriginal - item.CustoFinal;
-            const corEconomia = economia > 0 ? 'text-green-400' : (economia < 0 ? 'text-red-400' : 'text-slate-400');
-            tabelaCorpo.innerHTML += `
-                <tr class="hover:bg-slate-700/50 transition-colors">
-                    <td class="px-4 py-4 text-sm font-medium text-white">${item.Fornecedor || '-'}</td>
-                    <td class="px-4 py-4 text-sm text-slate-300">${item.Unidade || '-'}</td>
-                    <td class="px-4 py-4 text-sm text-right font-medium text-slate-400">${formatarMoeda(item.CustoOriginal)}</td>
-                    <td class="px-4 py-4 text-sm text-right font-medium text-purple-400">${formatarMoeda(item.CustoFinal)}</td>
-                    <td class="px-4 py-4 text-sm text-right font-bold ${corEconomia}">${formatarMoeda(economia)}</td>
-                </tr>`;
-        });
-    }
-
-    async function inicializarDashboard() {
-        const refreshIcon = document.getElementById('refresh-icon');
-        refreshIcon.classList.add('spinning'); // Inicia a animação
-
-        const dadosVivos = await buscarDadosDaPlanilha();
-        if (dadosVivos && dadosVivos.length > 0) {
-            calcularKPIs(dadosVivos);
-            renderizarGraficos(dadosVivos);
-            preencherTabela(dadosVivos);
-        } else {
-            console.log("Nenhum dado válido foi encontrado na planilha.");
+            return linhas.slice(1).map(linha => {
+                const valores = linha.match(/(".*?"|[^,]*)(?=,|$)/g) || [];
+                const obj = {};
+                const getValor = (index) => (index === -1 || !valores[index]) ? '' : valores[index].trim().replace(/^"|"$/g, '');
+                for (const key in indices) {
+                    const valor = getValor(indices[key]);
+                    obj[key] = config.numericas.includes(key) ? parseCurrency(valor) : valor;
+                }
+                return obj;
+            }).filter(item => Object.values(item).some(v => v !== '' && v !== 0));
+        } catch (error) {
+            console.error(`Erro ao buscar dados de "${config.nome}":`, error);
+            showMessage(`Erro ao carregar ${config.nome}: ${error.message}`, 'error');
+            return [];
         }
-        
-        refreshIcon.classList.remove('spinning'); // Para a animação
     }
     
+    // Função principal de inicialização
+    async function inicializarDashboards(isAutoRefresh = false) {
+        document.getElementById('refresh-icon').classList.add('spinning');
+        
+        // Injetar templates
+        document.getElementById('content-custos').innerHTML = document.getElementById('template-custos').innerHTML;
+        document.getElementById('content-servicos').innerHTML = document.getElementById('template-servicos').innerHTML;
+        
+        // Adicionar evento ao filtro
+        document.getElementById('filtro-hub').addEventListener('change', atualizarVisualizacaoServicos);
+
+        // Configurações das abas
+        const configCustos = { nome: 'Custos', colunas: { Fornecedor: ['fornecedor'], Unidade: ['unidade'], CustoOriginal: ['custo', 'custo original'], CustoFinal: ['custo final', 'valor retornado', 'valor retor']}, numericas: ['CustoOriginal', 'CustoFinal']};
+        const configServicos = { nome: 'Serviços', colunas: { Hub: ['hub plural', 'hub'], Cliente: ['cliente'], Faturamento: ['valor do serviço'], Custo: ['custo (r$)', 'custo'], Lucro: ['lucro (r$)', 'lucro'] }, numericas: ['Faturamento', 'Custo', 'Lucro']};
+
+        // Buscar dados em paralelo
+        const [dadosCustos, dadosServicos] = await Promise.all([
+            buscarDados(urlCustosCSV, configCustos),
+            buscarDados(urlServicosCSV, configServicos)
+        ]);
+
+        // Renderizar Custos
+        if (dadosCustos.length > 0) renderizarDashboardCustos(dadosCustos);
+        
+        // Renderizar Serviços
+        allServicosData = dadosServicos;
+        if (allServicosData.length > 0) {
+            popularFiltroHub();
+            atualizarVisualizacaoServicos();
+        }
+        
+        lastUpdateTime = new Date();
+        setDateHeader();
+        
+        if (!isAutoRefresh && (dadosCustos.length > 0 || allServicosData.length > 0)) {
+            showMessage('Dados atualizados com sucesso!', 'success', 3000);
+        }
+        
+        document.getElementById('refresh-icon').classList.remove('spinning');
+    }
+    
+    // Controle do Auto-refresh
+    const setupAutoRefresh = () => {
+        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
+        if (document.getElementById('auto-refresh').checked) {
+            autoRefreshTimer = setInterval(() => inicializarDashboards(true), REFRESH_INTERVAL);
+        }
+    };
+    
+    // Filtros e Visualizações
+    function popularFiltroHub() {
+        const filtroSelect = document.getElementById('filtro-hub');
+        const hubs = [...new Set(allServicosData.map(item => item.Hub).filter(Boolean))].sort();
+        filtroSelect.innerHTML = '<option value="todos">Todos os Hubs</option>';
+        hubs.forEach(hub => {
+            const option = document.createElement('option');
+            option.value = hub;
+            option.textContent = hub;
+            filtroSelect.appendChild(option);
+        });
+    }
+
+    function atualizarVisualizacaoServicos() {
+        const selectedHub = document.getElementById('filtro-hub').value;
+        const dadosFiltrados = selectedHub === 'todos' ? allServicosData : allServicosData.filter(item => item.Hub === selectedHub);
+        renderizarDashboardServicos(dadosFiltrados);
+    }
+    
+    // Renderização dos Dashboards
+    function renderizarDashboardCustos(dados) {
+        const custoOriginal = dados.reduce((acc, item) => acc + item.CustoOriginal, 0);
+        const custoFinal = dados.reduce((acc, item) => acc + item.CustoFinal, 0);
+        document.getElementById('kpi-custo-original').textContent = formatarMoeda(custoOriginal);
+        document.getElementById('kpi-custo-final').textContent = formatarMoeda(custoFinal);
+        document.getElementById('kpi-economia').textContent = formatarMoeda(custoOriginal - custoFinal);
+        document.getElementById('kpi-itens-custo').textContent = dados.length;
+        const economiaPorFornecedor = dados.reduce((acc, item) => { if (item.Fornecedor) { acc[item.Fornecedor] = (acc[item.Fornecedor] || 0) + (item.CustoOriginal - item.CustoFinal); } return acc; }, {});
+        const corTexto = '#9CA3AF', corGrid = '#475569';
+        
+        if (window.graficoComparativoGeral) window.graficoComparativoGeral.destroy();
+        window.graficoComparativoGeral = new Chart(document.getElementById('chartComparativoGeral'), {type: 'bar',data: {labels: ['Custos Totais'],datasets: [{ label: 'Custo Original', data: [custoOriginal], backgroundColor: '#ef4444' },{ label: 'Custo Final', data: [custoFinal], backgroundColor: '#8B5CF6' }]},options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: corTexto } } }, scales: { x: { ticks: { color: corTexto, callback: (v) => formatarMoeda(v) }, grid: { color: corGrid } }, y: { grid: { display: false } } } }});
+        
+        if (window.graficoEconomiaFornecedor) window.graficoEconomiaFornecedor.destroy();
+        window.graficoEconomiaFornecedor = new Chart(document.getElementById('chartEconomiaFornecedor'), {type: 'doughnut',data: {labels: Object.keys(economiaPorFornecedor),datasets: [{ data: Object.values(economiaPorFornecedor), backgroundColor: ['#22c55e', '#8B5CF6', '#3B82F6', '#EC4899', '#f97316'], borderColor: '#1e293b' }]},options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: corTexto } } } }});
+        
+        const tabelaCorpo = document.getElementById('tabela-custos');
+        tabelaCorpo.innerHTML = '';
+        dados.forEach(item => { const econ = item.CustoOriginal - item.CustoFinal; const corEcon = econ > 0 ? 'text-green-400' : (econ < 0 ? 'text-red-400' : 'text-slate-400'); tabelaCorpo.innerHTML += `<tr class="hover:bg-slate-700/50"><td class="px-4 py-4 text-sm font-medium text-white">${item.Fornecedor || '-'}</td><td class="px-4 py-4 text-sm text-slate-300">${item.Unidade || '-'}</td><td class="px-4 py-4 text-sm text-right font-medium text-slate-400">${formatarMoeda(item.CustoOriginal)}</td><td class="px-4 py-4 text-sm text-right font-medium text-purple-400">${formatarMoeda(item.CustoFinal)}</td><td class="px-4 py-4 text-sm text-right font-bold ${corEcon}">${formatarMoeda(econ)}</td></tr>`; });
+    }
+
+    function renderizarDashboardServicos(dados) {
+        const faturamento = dados.reduce((acc, item) => acc + item.Faturamento, 0);
+        const lucro = dados.reduce((acc, item) => acc + item.Lucro, 0);
+        document.getElementById('kpi-faturamento').textContent = formatarMoeda(faturamento);
+        document.getElementById('kpi-lucro').textContent = formatarMoeda(lucro);
+        document.getElementById('kpi-margem').textContent = formatarPercentual(faturamento > 0 ? (lucro / faturamento) * 100 : 0);
+        document.getElementById('kpi-itens-servico').textContent = dados.length;
+        const faturamentoPorHub = dados.reduce((acc, item) => { if (item.Hub) { acc[item.Hub] = (acc[item.Hub] || 0) + item.Faturamento; } return acc; }, {});
+        const lucroPorCliente = dados.reduce((acc, item) => { if (item.Cliente) { acc[item.Cliente] = (acc[item.Cliente] || 0) + item.Lucro; } return acc; }, {});
+        const corTexto = '#9CA3AF', corGrid = '#475569';
+        
+        if (window.graficoFaturamentoHub) window.graficoFaturamentoHub.destroy();
+        window.graficoFaturamentoHub = new Chart(document.getElementById('chartFaturamentoHub'), {type: 'bar', data: {labels: Object.keys(faturamentoPorHub), datasets:[{label: 'Faturamento', data: Object.values(faturamentoPorHub), backgroundColor: '#38bdf8'}]}, options:{responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}}, scales: {y: {ticks:{color: corTexto, callback: (v) => formatarMoeda(v)}, grid:{color: corGrid}}, x: {ticks:{color:corTexto}}}}});
+        
+        if (window.graficoLucroCliente) window.graficoLucroCliente.destroy();
+        window.graficoLucroCliente = new Chart(document.getElementById('chartLucroCliente'), {type: 'pie', data: {labels: Object.keys(lucroPorCliente), datasets:[{data: Object.values(lucroPorCliente), backgroundColor: ['#34d399', '#a78bfa', '#fb923c', '#60a5fa', '#f472b6'], borderColor: '#1e293b'}]}, options:{responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: corTexto }}}}});
+        
+        const tabelaCorpo = document.getElementById('tabela-servicos');
+        tabelaCorpo.innerHTML = '';
+        dados.forEach(item => { tabelaCorpo.innerHTML += `<tr class="hover:bg-slate-700/50"><td class="px-4 py-4 text-sm font-medium text-white">${item.Hub || '-'}</td><td class="px-4 py-4 text-sm text-slate-300">${item.Cliente || '-'}</td><td class="px-4 py-4 text-sm text-right font-medium text-sky-400">${formatarMoeda(item.Faturamento)}</td><td class="px-4 py-4 text-sm text-right font-medium text-slate-400">${formatarMoeda(item.Custo)}</td><td class="px-4 py-4 text-sm text-right font-bold text-emerald-400">${formatarMoeda(item.Lucro)}</td></tr>`; });
+    }
+
+    // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         setDateHeader();
-        inicializarDashboard();
-        document.getElementById('refresh-button').addEventListener('click', inicializarDashboard);
-    });
+        
+        const tabCustosBtn = document.getElementById('tab-custos'), tabServicosBtn = document.getElementById('tab-servicos');
+        const contentCustos = document.getElementById('content-custos'), contentServicos = document.getElementById('content-servicos');
 
-    // Descomente a linha abaixo se quiser que o dashboard atualize automaticamente
-    // setInterval(inicializarDashboard, 300000); // Atualiza a cada 5 minutos
+        tabCustosBtn.addEventListener('click', () => {
+            tabCustosBtn.classList.add('active'); tabServicosBtn.classList.remove('active');
+            contentCustos.style.display = 'block'; contentServicos.style.display = 'none';
+        });
+        tabServicosBtn.addEventListener('click', () => {
+            tabServicosBtn.classList.add('active'); tabCustosBtn.classList.remove('active');
+            contentCustos.style.display = 'none'; contentServicos.style.display = 'block';
+        });
+        
+        document.getElementById('refresh-button').addEventListener('click', () => inicializarDashboards(false));
+        document.getElementById('auto-refresh').addEventListener('change', setupAutoRefresh);
+        
+        inicializarDashboards(false);
+        setupAutoRefresh();
+    });
 </script>
 
 </body>
