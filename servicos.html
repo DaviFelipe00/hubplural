@@ -1,0 +1,271 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Análise de Serviços</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; /* Cor de fundo: slate-900 */
+        }
+        .chart-container { 
+            position: relative; 
+            height: 100%; 
+            width: 100%; 
+        }
+        @keyframes spin { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+        .spinning { 
+            animation: spin 1s linear infinite; 
+        }
+        /* Scrollbar Personalizada */
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; } /* slate-800 */
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; } /* indigo-600 */
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; } /* indigo-500 */
+    </style>
+</head>
+<body class="text-slate-300">
+
+<main class="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
+    
+  <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+    <div>
+        <h1 class="text-3xl font-bold text-white">Dashboard de Análise de Serviços</h1>
+        <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
+    </div>
+    <div class="flex items-center gap-4 mt-4 sm:mt-0">
+        <a href="index.html" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors">
+            Geral
+        </a>
+        <button id="refresh-button" class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
+            <span>Atualizar</span>
+        </button>
+    </div>
+</header>
+
+
+
+    <div id="kpi-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-sky-600/20 text-sky-400 rounded-lg flex items-center justify-center"><ion-icon name="analytics-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Faturamento Total</h3><p id="kpi-faturamento" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-lg flex items-center justify-center"><ion-icon name="happy-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Lucro Total</h3><p id="kpi-lucro" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-amber-600/20 text-amber-400 rounded-lg flex items-center justify-center"><ion-icon name="stats-chart-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Margem de Lucro</h3><p id="kpi-margem" class="text-2xl font-semibold text-white mt-1">0,00%</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-full-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Total de Serviços</h3><p id="kpi-itens-servicos" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
+    </div>
+
+    <div class="mb-6 bg-slate-800/50 p-4 rounded-lg">
+        <label for="filtro-unidade" class="block text-sm font-medium text-slate-400 mb-2">Filtrar por Unidade:</label>
+        <select id="filtro-unidade" class="w-full sm:w-1/3 bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+            <option value="todos">Todas as Unidades</option>
+        </select>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Faturamento por Unidade</h3><div class="chart-container"><canvas id="chartFaturamentoUnidade"></canvas></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Lucro por Cliente</h3><div class="chart-container"><canvas id="chartLucroCliente"></canvas></div></div>
+    </div>
+    
+    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5">
+        <h3 class="font-semibold text-white mb-4">Detalhamento dos Serviços</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="border-b border-slate-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Cliente</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Descrição</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor do Serviço</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Lucro</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Observações</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-servicos" class="divide-y divide-slate-700">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+<div id="loading-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 transition-opacity duration-300">
+    <ion-icon name="sync-outline" class="text-5xl text-indigo-400 spinning"></ion-icon>
+    <p class="text-white text-lg mt-4">Carregando dados da planilha...</p>
+</div>
+
+
+<script>
+    // ===================================================================
+    // CONFIGURAÇÃO - INSIRA SEU LINK AQUI
+    // ===================================================================
+    // PASSO ÚNICO: Cole aqui o link CSV da sua planilha de SERVIÇOS, obtido ao publicar na web.
+    const urlPlanilhaServicos = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2mRxxUdQh89dXvBJKdlfDXEJ8cSqv7vXnjZwW6ZBc98qqE9h0sqEIa4cN6dQskaGigQ-BB1wFnAzU/pub?output=csv';
+    // Exemplo: 'https://docs.google.com/spreadsheets/d/e/2PACX-1v.../pub?output=csv'
+    // ===================================================================
+
+    let allServicosData = []; // Armazena todos os dados para filtragem
+
+    // Funções Utilitárias
+    const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+    const formatarPercentual = (valor) => `${(valor || 0).toFixed(2).replace('.', ',')}%`;
+    const parseMoeda = (str) => {
+        if (!str || typeof str !== 'string') return 0;
+        const valorNumerico = parseFloat(str.replace(/\./g, '').replace('R$', '').trim().replace(',', '.'));
+        return isNaN(valorNumerico) ? 0 : valorNumerico;
+    };
+
+    function setDateHeader() {
+        document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    // Função para buscar e processar os dados da planilha
+    async function buscarDados() {
+        if (!urlPlanilhaServicos || urlPlanilhaServicos.includes('COLOQUE_SEU_LINK_CSV_AQUI')) {
+            throw new Error("URL da planilha não configurada. Edite o arquivo HTML.");
+        }
+        try {
+            const resposta = await fetch(`${urlPlanilhaServicos}&t=${new Date().getTime()}`);
+            if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`);
+            const csv = await resposta.text();
+            if (csv.trim().startsWith('<')) throw new Error("Dados retornaram como HTML. Verifique se publicou como 'CSV'.");
+            if (!csv.trim()) return [];
+
+            const linhas = csv.trim().split('\n');
+            const cabecalho = linhas[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
+            
+            const encontrarIndice = (nomes) => nomes.map(n => cabecalho.indexOf(n.toLowerCase())).find(i => i !== -1) ?? -1;
+
+            const indices = {
+                unidade: encontrarIndice(['unidade']),
+                cliente: encontrarIndice(['cliente']),
+                descricao: encontrarIndice(['descricao', 'descrição']),
+                valorServico: encontrarIndice(['# valor do servico', 'valor do servico', 'faturamento']),
+                custo: encontrarIndice(['# custo', 'custo']),
+                lucro: encontrarIndice(['lucro']),
+                observacoes: encontrarIndice(['observacoes', 'observações']),
+            };
+            
+            return linhas.slice(1).map(linha => {
+                 const valores = linha.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/"/g, '')) || [];
+                const getValor = (index) => (index > -1 && valores[index]) ? valores[index].trim() : '';
+                return {
+                    Unidade: getValor(indices.unidade),
+                    Cliente: getValor(indices.cliente),
+                    Descricao: getValor(indices.descricao),
+                    Faturamento: parseMoeda(getValor(indices.valorServico)),
+                    Custo: parseMoeda(getValor(indices.custo)),
+                    Lucro: parseMoeda(getValor(indices.lucro)),
+                    Observacoes: getValor(indices.observacoes),
+                };
+            }).filter(item => item.Unidade || item.Cliente);
+        } catch (error) {
+            console.error("Erro ao buscar dados:", error);
+            throw error;
+        }
+    }
+
+    // Função para atualizar toda a visualização com base nos dados
+    function atualizarVisualizacao(dados) {
+        if (!dados) return;
+
+        // 1. Calcular e exibir KPIs
+        const faturamento = dados.reduce((a, i) => a + i.Faturamento, 0);
+        const lucro = dados.reduce((a, i) => a + i.Lucro, 0);
+        document.getElementById('kpi-faturamento').textContent = formatarMoeda(faturamento);
+        document.getElementById('kpi-lucro').textContent = formatarMoeda(lucro);
+        document.getElementById('kpi-margem').textContent = formatarPercentual(faturamento > 0 ? (lucro / faturamento) * 100 : 0);
+        document.getElementById('kpi-itens-servicos').textContent = dados.length;
+
+        const corTexto = '#9ca3af', corGrid = '#334155';
+        
+        // 2. Renderizar Gráficos
+        // Gráfico de Faturamento por Unidade
+        const faturamentoPorUnidade = dados.reduce((a, i) => { if(i.Unidade) a[i.Unidade] = (a[i.Unidade] || 0) + i.Faturamento; return a; }, {});
+        if (window.graficoFaturamentoUnidade) window.graficoFaturamentoUnidade.destroy();
+        window.graficoFaturamentoUnidade = new Chart('chartFaturamentoUnidade', {type: 'bar', data: {labels: Object.keys(faturamentoPorUnidade), datasets: [{label: 'Faturamento', data: Object.values(faturamentoPorUnidade), backgroundColor: '#38bdf8', borderRadius: 4}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {y: {ticks: {color: corTexto, callback: (v) => formatarMoeda(v)}, grid: {color: corGrid}}, x: {ticks: {color: corTexto}}}}});
+
+        // Gráfico de Lucro por Cliente
+        const lucroPorCliente = dados.reduce((a, i) => { if(i.Cliente) a[i.Cliente] = (a[i.Cliente] || 0) + i.Lucro; return a; }, {});
+        if (window.graficoLucroCliente) window.graficoLucroCliente.destroy();
+        window.graficoLucroCliente = new Chart('chartLucroCliente', {type: 'pie', data: {labels: Object.keys(lucroPorCliente), datasets: [{data: Object.values(lucroPorCliente), backgroundColor: ['#34d399', '#a78bfa', '#fb923c', '#60a5fa', '#f472b6', '#ec4899'], borderColor: '#1e293b'}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'bottom', labels: {color: corTexto, padding: 15}}}}});
+        
+        // 3. Preencher Tabela
+        document.getElementById('tabela-servicos').innerHTML = dados.map(item => `<tr class="hover:bg-slate-700/50">
+            <td class="px-4 py-4 text-sm font-medium text-white whitespace-nowrap">${item.Unidade||'-'}</td>
+            <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.Cliente||'-'}</td>
+            <td class="px-4 py-4 text-sm text-slate-400 max-w-xs truncate" title="${item.Descricao||''}">${item.Descricao||'-'}</td>
+            <td class="px-4 py-4 text-sm text-right font-medium text-sky-400 whitespace-nowrap">${formatarMoeda(item.Faturamento)}</td>
+            <td class="px-4 py-4 text-sm text-right font-medium text-slate-400 whitespace-nowrap">${formatarMoeda(item.Custo)}</td>
+            <td class="px-4 py-4 text-sm text-right font-bold text-emerald-400 whitespace-nowrap">${formatarMoeda(item.Lucro)}</td>
+            <td class="px-4 py-4 text-sm text-slate-400 whitespace-nowrap">${item.Observacoes||'-'}</td>
+        </tr>`).join('');
+    }
+    
+    // Função para popular o filtro de unidades
+    function popularFiltroUnidade() {
+        const filtro = document.getElementById('filtro-unidade');
+        const unidades = [...new Set(allServicosData.map(i => i.Unidade).filter(Boolean))].sort();
+        filtro.innerHTML = '<option value="todos">Todas as Unidades</option>';
+        unidades.forEach(unidade => filtro.innerHTML += `<option value="${unidade}">${unidade}</option>`);
+    }
+
+    // Função de Inicialização Principal
+    async function inicializarDashboard() {
+        const overlay = document.getElementById('loading-overlay');
+        overlay.style.display = 'flex';
+        overlay.style.opacity = 1;
+        document.getElementById('refresh-icon').classList.add('spinning');
+        
+        try {
+            allServicosData = await buscarDados();
+            
+            if (allServicosData.length > 0) {
+                popularFiltroUnidade();
+                atualizarVisualizacao(allServicosData);
+            } else {
+                 throw new Error("Nenhum dado encontrado na planilha. Verifique o formato ou se há linhas preenchidas.");
+            }
+            
+            // Suave desaparecimento do overlay
+            overlay.style.opacity = 0;
+            setTimeout(() => overlay.style.display = 'none', 300);
+
+        } catch (error) {
+            overlay.innerHTML = `<div class="text-center p-4"><ion-icon name="cloud-offline-outline" class="text-5xl text-red-400"></ion-icon><p class="text-white text-lg mt-4">Erro ao Carregar Dados</p><p class="text-slate-400 text-center max-w-sm mt-1">Verifique o link, permissões da planilha e sua conexão.</p><p class="text-xs text-slate-500 mt-4">${error.message}</p></div>`;
+        } finally {
+            document.getElementById('refresh-icon').classList.remove('spinning');
+        }
+    }
+
+    // Event Listeners
+    document.addEventListener('DOMContentLoaded', () => {
+        setDateHeader();
+        
+        document.getElementById('refresh-button').addEventListener('click', inicializarDashboard);
+        
+        document.getElementById('filtro-unidade').addEventListener('change', (e) => {
+            const unidadeSelecionada = e.target.value;
+            const dadosFiltrados = unidadeSelecionada === 'todos' 
+                ? allServicosData 
+                : allServicosData.filter(item => item.Unidade === unidadeSelecionada);
+            atualizarVisualizacao(dadosFiltrados);
+        });
+        
+        inicializarDashboard();
+    });
+</script>
+</body>
+</html>

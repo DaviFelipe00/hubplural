@@ -3,169 +3,194 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Hub Plural - Análise Completa</title>
+    <title>Dashboard Hubplural</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
+    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
-    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
     <style>
-        body { font-family: 'Inter', sans-serif; }
-        .chart-container { position: relative; height: 100%; width: 100%; }
-        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
-        .spinning { animation: spin 1s linear infinite; }
-        .tab-button.active { background-color: #7c3aed; color: white; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a; /* slate-900 */
+        }
+        .chart-container { 
+            position: relative; 
+            height: 100%; 
+            width: 100%; 
+        }
+        @keyframes spin { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+        .spinning { 
+            animation: spin 1s linear infinite; 
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #1e293b; /* slate-800 */
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #4f46e5; /* indigo-600 */
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6366f1; /* indigo-500 */
+        }
     </style>
 </head>
-<body class="bg-slate-900 text-slate-300">
+<body class="text-slate-300">
 
-<main class="p-6 lg:p-10 max-w-7xl mx-auto">
-    <div id="status-messages" class="mb-4"></div>
+<main class="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
+    
+   <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+    <div>
+        <h1 class="text-3xl font-bold text-white">Dashboard de Análise de Economia</h1>
+        <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
+    </div>
+    <div class="flex items-center gap-4 mt-4 sm:mt-0">
+        <a href="servicos.html" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors">
+            Serviços
+        </a>
+        <button id="refresh-button" class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+            <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
+            <span>Atualizar</span>
+        </button>
+    </div>
+</header>
 
-    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6">
-        <div>
-            <h1 class="text-3xl font-bold text-white">Dashboard Hub Plural</h1>
-            <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
-            <p id="last-update" class="text-slate-500 text-sm mt-1">Última atualização: --</p>
-        </div>
-        <div class="flex items-center gap-4 mt-4 sm:mt-0">
-            <div class="flex items-center gap-2">
-                <input type="checkbox" id="auto-refresh" class="rounded text-purple-500 focus:ring-purple-500" checked>
-                <label for="auto-refresh" class="text-sm text-slate-400">Auto-atualizar (5min)</label>
+    <div id="kpi-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="archive-outline" class="text-2xl"></ion-icon></div>
+                <div>
+                    <h3 class="text-sm font-medium text-slate-400">Valor Anterior</h3>
+                    <p id="kpi-anterior" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
+                </div>
             </div>
-            <button id="refresh-button" class="flex items-center gap-2 px-4 py-2 bg-slate-700/50 text-slate-300 rounded-lg hover:bg-slate-700 transition-colors focus:outline-none focus:ring-2 focus:ring-purple-500">
-                <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
-                <span>Atualizar</span>
-            </button>
         </div>
-    </header>
-
-    <div class="mb-8 border-b border-slate-700">
-        <nav class="flex space-x-2" aria-label="Tabs">
-            <button id="tab-custos" class="tab-button active px-4 py-2 font-medium text-sm rounded-t-lg">Análise de Custos</button>
-            <button id="tab-servicos" class="tab-button px-4 py-2 font-medium text-sm rounded-t-lg text-slate-400 hover:bg-slate-800">Clientes Hub</button>
-        </nav>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div>
+                <div>
+                    <h3 class="text-sm font-medium text-slate-400">Valor Atual</h3>
+                    <p id="kpi-atual" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div>
+                <div>
+                    <h3 class="text-sm font-medium text-slate-400">Economia Total</h3>
+                    <p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
+                </div>
+            </div>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4">
+                <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div>
+                <div>
+                    <h3 class="text-sm font-medium text-slate-400">Itens Analisados</h3>
+                    <p id="kpi-itens" class="text-2xl font-semibold text-white mt-1">0</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div id="content-custos">
-        <div class="text-center py-12">
-            <ion-icon name="hourglass-outline" class="text-4xl text-slate-500 spinning"></ion-icon>
-            <p class="text-slate-400 mt-2">Carregando dados de custos...</p>
+    <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10">
+        <div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col">
+            <h3 class="font-semibold text-white mb-4">Economia por Fornecedor</h3>
+            <div class="chart-container">
+                <canvas id="chartEconomiaFornecedor"></canvas>
+            </div>
+        </div>
+        <div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col">
+            <h3 class="font-semibold text-white mb-4">Valores por Unidade (Anterior vs. Atual)</h3>
+            <div class="chart-container">
+                <canvas id="chartValoresUnidade"></canvas>
+            </div>
         </div>
     </div>
 
-    <div id="content-servicos" style="display: none;">
-        <div class="text-center py-12">
-            <ion-icon name="hourglass-outline" class="text-4xl text-slate-500 spinning"></ion-icon>
-            <p class="text-slate-400 mt-2">Carregando dados de serviços...</p>
+    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5">
+        <h3 class="font-semibold text-white mb-4">Detalhamento dos Serviços</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="border-b border-slate-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Descrição do Serviço</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Anterior</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Atual</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Economia</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-servicos" class="divide-y divide-slate-700">
+                    </tbody>
+            </table>
         </div>
     </div>
 </main>
+<div id="loading-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
+    <ion-icon name="sync-outline" class="text-5xl text-indigo-400 spinning"></ion-icon>
+    <p class="text-white text-lg mt-4">Carregando dados da planilha...</p>
+</div>
 
-<template id="template-custos">
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Custo Original</h3><p id="kpi-custo-original" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="flag-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Custo Final</h3><p id="kpi-custo-final" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Economia Realizada</h3><p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-blue-600/20 text-blue-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Total de Itens</h3><p id="kpi-itens-custo" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
-    </div>
-    <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10"><div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Comparativo de Custos (Geral)</h3><div class="chart-container"><canvas id="chartComparativoGeral"></canvas></div></div><div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Economia por Fornecedor</h3><div class="chart-container"><canvas id="chartEconomiaFornecedor"></canvas></div></div></div>
-    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><h3 class="font-semibold text-white mb-4">Detalhamento dos Custos</h3><div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b border-slate-700"><tr><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Original</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Final</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Economia</th></tr></thead><tbody id="tabela-custos" class="divide-y divide-slate-700"></tbody></table></div></div>
-</template>
-
-<template id="template-servicos">
-    <div class="mb-6 bg-slate-800/50 p-4 rounded-lg">
-        <label for="filtro-hub" class="block text-sm font-medium text-slate-400 mb-2">Filtrar por Hub:</label>
-        <select id="filtro-hub" class="w-full sm:w-1/3 bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-purple-500 focus:border-purple-500 block p-2.5">
-            <option value="todos">Todos os Hubs</option>
-        </select>
-    </div>
-    <div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-sky-600/20 text-sky-400 rounded-lg flex items-center justify-center"><ion-icon name="analytics-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Faturamento Total</h3><p id="kpi-faturamento" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-lg flex items-center justify-center"><ion-icon name="happy-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Lucro Total</h3><p id="kpi-lucro" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-amber-600/20 text-amber-400 rounded-lg flex items-center justify-center"><ion-icon name="stats-chart-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Margem de Lucro</h3><p id="kpi-margem" class="text-2xl font-semibold text-white mt-1">0,00%</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-full-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Total de Serviços</h3><p id="kpi-itens-servico" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
-    </div>
-    <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10"><div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Faturamento por Hub</h3><div class="chart-container"><canvas id="chartFaturamentoHub"></canvas></div></div><div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10 h-96 flex flex-col"><h3 class="font-semibold text-white mb-4">Lucro por Cliente</h3><div class="chart-container"><canvas id="chartLucroCliente"></canvas></div></div></div>
-    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/10"><h3 class="font-semibold text-white mb-4">Detalhamento dos Serviços</h3><div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b border-slate-700"><tr><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Hub</th><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Cliente</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor do Serviço</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Lucro</th></tr></thead><tbody id="tabela-servicos" class="divide-y divide-slate-700"></tbody></table></div></div>
-</template>
 
 <script>
-    // ===========================================
-    // CONFIGURAÇÃO - COLE AQUI SEUS LINKS
-    // ===========================================
-    
-    // PASSO 1: Cole aqui o link gerado após publicar a planilha como CSV
-    const urlPublicadaCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv"; 
-    
-    // PASSO 2: Cole aqui os GIDs das suas abas
-    const gidCustos = '366617358'; 
-    const gidServicos = '979295190';
+    // ===================================================================
+    // CONFIGURAÇÃO - INSIRA SEU LINK AQUI
+    // ===================================================================
+    // PASSO ÚNICO: Cole o link da sua planilha publicada como CSV.
+    const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv';
+    // Exemplo: 'https://docs.google.com/spreadsheets/d/e/2PACX-1v.../pub?output=csv'
+    // ===================================================================
 
-    // ===========================================
-    // SISTEMA DO DASHBOARD (NÃO MODIFICAR ABAIXO)
-    // ===========================================
-    
-    // URLs finais
-    const urlCustosCSV = `${urlPublicadaCSV}&gid=${gidCustos}`;
-    const urlServicosCSV = `${urlPublicadaCSV}&gid=${gidServicos}`;
-    
-    // Variáveis globais
-    let allServicosData = [];
-    let autoRefreshTimer = null;
-    let lastUpdateTime = null;
-    const REFRESH_INTERVAL = 5 * 60 * 1000; // 5 minutos
-    
-    // Funções utilitárias
-    const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor);
-    const formatarPercentual = (valor) => `${valor.toFixed(2).replace('.', ',')}%`;
-    const parseCurrency = (valor) => {
-        if (typeof valor !== 'string' || !valor) return 0;
-        const cleanedValue = valor.replace(/[R$\s.]/g, '').replace(/,/g, '.');
-        return parseFloat(cleanedValue) || 0;
+    // Funções Utilitárias
+    const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+    const parseMoeda = (str) => {
+        if (!str || typeof str !== 'string') return 0;
+        // Remove 'R$', espaços, e troca vírgula por ponto.
+        const valorNumerico = parseFloat(str.replace(/\./g, '').replace('R$', '').trim().replace(',', '.'));
+        return isNaN(valorNumerico) ? 0 : valorNumerico;
     };
-    const setDateHeader = () => {
+
+    function setDateHeader() {
         document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
-        if (lastUpdateTime) {
-            document.getElementById('last-update').textContent = `Última atualização: ${lastUpdateTime.toLocaleTimeString('pt-BR')}`;
-        }
-    };
-    
-    // Sistema de mensagens
-    const showMessage = (message, type = 'info', duration = 5000) => {
-        const container = document.getElementById('status-messages');
-        const messageDiv = document.createElement('div');
-        const bgClass = type === 'error' ? 'bg-red-800 border-red-600' : 'bg-green-800 border-green-600';
-        const icon = type === 'error' ? 'alert-circle-outline' : 'checkmark-circle-outline';
-        
-        messageDiv.className = `${bgClass} text-white p-4 rounded-lg mb-4 flex items-center gap-3 border-l-4`;
-        messageDiv.innerHTML = `<ion-icon name="${icon}" class="text-xl flex-shrink-0"></ion-icon><span>${message}</span>`;
-        container.appendChild(messageDiv);
-        setTimeout(() => messageDiv.remove(), duration);
-    };
-    
-    // Função principal de busca de dados
-    async function buscarDados(url, config) {
-        if (url.includes("COLE_AQUI")) {
-            const errorMsg = `<strong>Configuração necessária:</strong> Cole o link da sua planilha publicada e os GIDs nas variáveis no topo do script.`;
-            showMessage(errorMsg, 'error', 15000);
-            return [];
-        }
+    }
 
+    // Função Principal para Buscar e Processar os Dados
+    async function buscarDadosDaPlanilha() {
+        if (!urlDaPlanilhaCSV || urlDaPlanilhaCSV.includes('COLOQUE_SEU_LINK_CSV_AQUI')) {
+            document.getElementById('loading-overlay').innerHTML = `
+                <ion-icon name="warning-outline" class="text-5xl text-amber-400"></ion-icon>
+                <p class="text-white text-lg mt-4">Configuração necessária</p>
+                <p class="text-slate-400 mt-1">Por favor, insira o link da sua planilha CSV no código.</p>
+            `;
+            throw new Error("URL da planilha não configurada.");
+        }
         try {
-            const resposta = await fetch(`${url}&t=${new Date().getTime()}`);
-            if (!resposta.ok) throw new Error(`Erro HTTP ${resposta.status}`);
+            const resposta = await fetch(`${urlDaPlanilhaCSV}&t=${new Date().getTime()}`);
+            if (!resposta.ok) throw new Error(`Falha na rede: ${resposta.statusText}`);
+            
             const dadosCSV = await resposta.text();
-            if (dadosCSV.trim().startsWith('<')) throw new Error("Dados retornaram como HTML. Verifique se a planilha foi publicada como 'CSV'.");
-            if (!dadosCSV.trim()) return []; // Planilha vazia, retorna array vazio sem erro
+            if (dadosCSV.trim().startsWith('<')) throw new Error("A resposta foi um HTML. Verifique se o link foi publicado como 'CSV' e não como 'Página da web'.");
 
             const linhas = dadosCSV.trim().split('\n');
-            const cabecalho = (linhas[0].match(/(".*?"|[^,]*)(?=,|$)/g) || []).map(h => h.trim().replace(/^"|"$/g, '').toLowerCase());
-            
+            const cabecalho = linhas[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
+
             const encontrarIndice = (nomesPossiveis) => {
                 for (const nome of nomesPossiveis) {
                     const index = cabecalho.indexOf(nome.toLowerCase());
@@ -174,161 +199,165 @@
                 return -1;
             };
 
-            const indices = {};
-            for (const key in config.colunas) {
-                indices[key] = encontrarIndice(config.colunas[key]);
-            }
-
+            const indices = {
+                fornecedor: encontrarIndice(['fornecedor']),
+                unidade: encontrarIndice(['unidade']),
+                descricao: encontrarIndice(['descrição do serviço', 'descricao do servico']),
+                anterior: encontrarIndice(['# valor anterior', 'valor anterior']),
+                atual: encontrarIndice(['# valor atual', 'valor atual']),
+                economia: encontrarIndice(['economia'])
+            };
+            
             return linhas.slice(1).map(linha => {
-                const valores = linha.match(/(".*?"|[^,]*)(?=,|$)/g) || [];
-                const obj = {};
-                const getValor = (index) => (index === -1 || !valores[index]) ? '' : valores[index].trim().replace(/^"|"$/g, '');
-                for (const key in indices) {
-                    const valor = getValor(indices[key]);
-                    obj[key] = config.numericas.includes(key) ? parseCurrency(valor) : valor;
-                }
-                return obj;
-            }).filter(item => Object.values(item).some(v => v !== '' && v !== 0));
+                // Tratamento para CSV com vírgulas dentro dos campos
+                const valores = linha.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(v => v.replace(/"/g, ''));
+                
+                const getValor = (index) => valores[index] ? valores[index].trim() : '';
+                return {
+                    Fornecedor: getValor(indices.fornecedor),
+                    Unidade: getValor(indices.unidade),
+                    Descricao: getValor(indices.descricao),
+                    ValorAnterior: parseMoeda(getValor(indices.anterior)),
+                    ValorAtual: parseMoeda(getValor(indices.atual)),
+                    Economia: parseMoeda(getValor(indices.economia)),
+                };
+            }).filter(item => item.Fornecedor); // Filtra linhas vazias
         } catch (error) {
-            console.error(`Erro ao buscar dados de "${config.nome}":`, error);
-            showMessage(`Erro ao carregar ${config.nome}: ${error.message}`, 'error');
-            return [];
+            document.getElementById('loading-overlay').innerHTML = `
+                <ion-icon name="cloud-offline-outline" class="text-5xl text-red-400"></ion-icon>
+                <p class="text-white text-lg mt-4">Erro ao Carregar Dados</p>
+                <p class="text-slate-400 text-center max-w-sm mt-1">Não foi possível buscar os dados. Verifique o link, a permissão da planilha e sua conexão.</p>
+                <p class="text-xs text-slate-500 mt-4">${error.message}</p>
+            `;
+            console.error("Erro ao buscar dados:", error);
+            throw error; 
         }
     }
-    
-    // Função principal de inicialização
-    async function inicializarDashboards(isAutoRefresh = false) {
-        document.getElementById('refresh-icon').classList.add('spinning');
-        
-        // Injetar templates
-        document.getElementById('content-custos').innerHTML = document.getElementById('template-custos').innerHTML;
-        document.getElementById('content-servicos').innerHTML = document.getElementById('template-servicos').innerHTML;
-        
-        // Adicionar evento ao filtro
-        document.getElementById('filtro-hub').addEventListener('change', atualizarVisualizacaoServicos);
 
-        // Configurações das abas
-        const configCustos = { nome: 'Custos', colunas: { Fornecedor: ['fornecedor'], Unidade: ['unidade'], CustoOriginal: ['custo', 'custo original'], CustoFinal: ['custo final', 'valor retornado', 'valor retor']}, numericas: ['CustoOriginal', 'CustoFinal']};
-        const configServicos = { nome: 'Serviços', colunas: { Hub: ['hub plural', 'hub'], Cliente: ['cliente'], Faturamento: ['valor do serviço'], Custo: ['custo (r$)', 'custo'], Lucro: ['lucro (r$)', 'lucro'] }, numericas: ['Faturamento', 'Custo', 'Lucro']};
-
-        // Buscar dados em paralelo
-        const [dadosCustos, dadosServicos] = await Promise.all([
-            buscarDados(urlCustosCSV, configCustos),
-            buscarDados(urlServicosCSV, configServicos)
-        ]);
-
-        // Renderizar Custos
-        if (dadosCustos.length > 0) renderizarDashboardCustos(dadosCustos);
+    // Funções de Renderização
+    function calcularKPIs(dados) {
+        const valorAnterior = dados.reduce((acc, item) => acc + item.ValorAnterior, 0);
+        const valorAtual = dados.reduce((acc, item) => acc + item.ValorAtual, 0);
+        const economia = dados.reduce((acc, item) => acc + item.Economia, 0);
         
-        // Renderizar Serviços
-        allServicosData = dadosServicos;
-        if (allServicosData.length > 0) {
-            popularFiltroHub();
-            atualizarVisualizacaoServicos();
-        }
-        
-        lastUpdateTime = new Date();
-        setDateHeader();
-        
-        if (!isAutoRefresh && (dadosCustos.length > 0 || allServicosData.length > 0)) {
-            showMessage('Dados atualizados com sucesso!', 'success', 3000);
-        }
-        
-        document.getElementById('refresh-icon').classList.remove('spinning');
+        document.getElementById('kpi-anterior').textContent = formatarMoeda(valorAnterior);
+        document.getElementById('kpi-atual').textContent = formatarMoeda(valorAtual);
+        document.getElementById('kpi-economia').textContent = formatarMoeda(economia);
+        document.getElementById('kpi-itens').textContent = dados.length;
     }
-    
-    // Controle do Auto-refresh
-    const setupAutoRefresh = () => {
-        if (autoRefreshTimer) clearInterval(autoRefreshTimer);
-        if (document.getElementById('auto-refresh').checked) {
-            autoRefreshTimer = setInterval(() => inicializarDashboards(true), REFRESH_INTERVAL);
-        }
-    };
-    
-    // Filtros e Visualizações
-    function popularFiltroHub() {
-        const filtroSelect = document.getElementById('filtro-hub');
-        const hubs = [...new Set(allServicosData.map(item => item.Hub).filter(Boolean))].sort();
-        filtroSelect.innerHTML = '<option value="todos">Todos os Hubs</option>';
-        hubs.forEach(hub => {
-            const option = document.createElement('option');
-            option.value = hub;
-            option.textContent = hub;
-            filtroSelect.appendChild(option);
+
+    function renderizarGraficos(dados) {
+        const corTexto = '#9ca3af'; // slate-400
+        const corGrid = '#334155';  // slate-700
+        
+        // Gráfico 1: Economia por Fornecedor
+        const economiaPorFornecedor = dados.reduce((acc, item) => {
+            if (item.Fornecedor) {
+                acc[item.Fornecedor] = (acc[item.Fornecedor] || 0) + item.Economia;
+            }
+            return acc;
+        }, {});
+        
+        if (window.graficoEconomiaFornecedor) window.graficoEconomiaFornecedor.destroy();
+        window.graficoEconomiaFornecedor = new Chart(document.getElementById('chartEconomiaFornecedor'), {
+            type: 'doughnut', 
+            data: { 
+                labels: Object.keys(economiaPorFornecedor), 
+                datasets: [{ 
+                    data: Object.values(economiaPorFornecedor), 
+                    backgroundColor: ['#4f46e5', '#7c3aed', '#a855f7', '#34d399', '#f97316'], 
+                    borderColor: '#1e293b' // slate-800
+                }] 
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { position: 'bottom', labels: { color: corTexto, padding: 20 } } 
+                } 
+            }
+        });
+
+        // Gráfico 2: Valores por Unidade
+        const unidades = [...new Set(dados.map(item => item.Unidade))];
+        const dadosAnterior = unidades.map(u => dados.filter(d => d.Unidade === u).reduce((s, i) => s + i.ValorAnterior, 0));
+        const dadosAtual = unidades.map(u => dados.filter(d => d.Unidade === u).reduce((s, i) => s + i.ValorAtual, 0));
+        
+        if (window.graficoValoresUnidade) window.graficoValoresUnidade.destroy();
+        window.graficoValoresUnidade = new Chart(document.getElementById('chartValoresUnidade'), {
+            type: 'bar',
+            data: {
+                labels: unidades,
+                datasets: [
+                    { label: 'Valor Anterior', data: dadosAnterior, backgroundColor: '#dc2626' /* red-600 */, borderRadius: 4 },
+                    { label: 'Valor Atual', data: dadosAtual, backgroundColor: '#7c3aed' /* purple-600 */, borderRadius: 4 }
+                ]
+            },
+            options: { 
+                responsive: true, 
+                maintainAspectRatio: false, 
+                plugins: { 
+                    legend: { labels: { color: corTexto } } 
+                }, 
+                scales: { 
+                    y: { beginAtZero: true, ticks: { color: corTexto, callback: (v) => formatarMoeda(v) }, grid: { color: corGrid } }, 
+                    x: { ticks: { color: corTexto }, grid: { display: false } } 
+                } 
+            }
         });
     }
 
-    function atualizarVisualizacaoServicos() {
-        const selectedHub = document.getElementById('filtro-hub').value;
-        const dadosFiltrados = selectedHub === 'todos' ? allServicosData : allServicosData.filter(item => item.Hub === selectedHub);
-        renderizarDashboardServicos(dadosFiltrados);
+    function preencherTabela(dados) {
+        const tabelaCorpo = document.getElementById('tabela-servicos');
+        tabelaCorpo.innerHTML = ''; // Limpa a tabela antes de preencher
+        dados.forEach(item => {
+            const economiaCor = item.Economia > 0 ? 'text-green-400' : (item.Economia < 0 ? 'text-red-400' : 'text-slate-400');
+            
+            tabelaCorpo.innerHTML += `
+              <tr class="hover:bg-slate-700/50 transition-colors">
+                  <td class="px-4 py-4 text-sm font-medium text-white whitespace-nowrap">${item.Fornecedor || '-'}</td>
+                  <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.Unidade || '-'}</td>
+                  <td class="px-4 py-4 text-sm text-slate-400 max-w-xs truncate" title="${item.Descricao || ''}">${item.Descricao || '-'}</td>
+                  <td class="px-4 py-4 text-sm text-right font-medium text-slate-400 whitespace-nowrap">${formatarMoeda(item.ValorAnterior)}</td>
+                  <td class="px-4 py-4 text-sm text-right font-medium text-purple-400 whitespace-nowrap">${formatarMoeda(item.ValorAtual)}</td>
+                  <td class="px-4 py-4 text-sm text-right font-bold ${economiaCor} whitespace-nowrap">${formatarMoeda(item.Economia)}</td>
+              </tr>`;
+        });
+    }
+
+    // Função de Inicialização do Dashboard
+    async function inicializarDashboard() {
+        document.getElementById('loading-overlay').style.display = 'flex';
+        document.getElementById('refresh-icon').classList.add('spinning');
+        
+        try {
+            const dadosVivos = await buscarDadosDaPlanilha();
+            
+            if (dadosVivos && dadosVivos.length > 0) {
+                calcularKPIs(dadosVivos);
+                renderizarGraficos(dadosVivos);
+                preencherTabela(dadosVivos);
+                document.getElementById('loading-overlay').style.display = 'none';
+            } else if (urlDaPlanilhaCSV && !urlDaPlanilhaCSV.includes('COLOQUE_SEU_LINK_CSV_AQUI')) {
+                // Se a URL está configurada mas não retornou dados
+                 document.getElementById('loading-overlay').innerHTML = `
+                    <ion-icon name="document-text-outline" class="text-5xl text-sky-400"></ion-icon>
+                    <p class="text-white text-lg mt-4">Nenhum dado encontrado</p>
+                    <p class="text-slate-400 mt-1">A planilha parece estar vazia ou com formato incorreto.</p>
+                `;
+            }
+        } catch (e) {
+            // A mensagem de erro já é tratada na função de busca
+        } finally {
+            document.getElementById('refresh-icon').classList.remove('spinning');
+        }
     }
     
-    // Renderização dos Dashboards
-    function renderizarDashboardCustos(dados) {
-        const custoOriginal = dados.reduce((acc, item) => acc + item.CustoOriginal, 0);
-        const custoFinal = dados.reduce((acc, item) => acc + item.CustoFinal, 0);
-        document.getElementById('kpi-custo-original').textContent = formatarMoeda(custoOriginal);
-        document.getElementById('kpi-custo-final').textContent = formatarMoeda(custoFinal);
-        document.getElementById('kpi-economia').textContent = formatarMoeda(custoOriginal - custoFinal);
-        document.getElementById('kpi-itens-custo').textContent = dados.length;
-        const economiaPorFornecedor = dados.reduce((acc, item) => { if (item.Fornecedor) { acc[item.Fornecedor] = (acc[item.Fornecedor] || 0) + (item.CustoOriginal - item.CustoFinal); } return acc; }, {});
-        const corTexto = '#9CA3AF', corGrid = '#475569';
-        
-        if (window.graficoComparativoGeral) window.graficoComparativoGeral.destroy();
-        window.graficoComparativoGeral = new Chart(document.getElementById('chartComparativoGeral'), {type: 'bar',data: {labels: ['Custos Totais'],datasets: [{ label: 'Custo Original', data: [custoOriginal], backgroundColor: '#ef4444' },{ label: 'Custo Final', data: [custoFinal], backgroundColor: '#8B5CF6' }]},options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: corTexto } } }, scales: { x: { ticks: { color: corTexto, callback: (v) => formatarMoeda(v) }, grid: { color: corGrid } }, y: { grid: { display: false } } } }});
-        
-        if (window.graficoEconomiaFornecedor) window.graficoEconomiaFornecedor.destroy();
-        window.graficoEconomiaFornecedor = new Chart(document.getElementById('chartEconomiaFornecedor'), {type: 'doughnut',data: {labels: Object.keys(economiaPorFornecedor),datasets: [{ data: Object.values(economiaPorFornecedor), backgroundColor: ['#22c55e', '#8B5CF6', '#3B82F6', '#EC4899', '#f97316'], borderColor: '#1e293b' }]},options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: corTexto } } } }});
-        
-        const tabelaCorpo = document.getElementById('tabela-custos');
-        tabelaCorpo.innerHTML = '';
-        dados.forEach(item => { const econ = item.CustoOriginal - item.CustoFinal; const corEcon = econ > 0 ? 'text-green-400' : (econ < 0 ? 'text-red-400' : 'text-slate-400'); tabelaCorpo.innerHTML += `<tr class="hover:bg-slate-700/50"><td class="px-4 py-4 text-sm font-medium text-white">${item.Fornecedor || '-'}</td><td class="px-4 py-4 text-sm text-slate-300">${item.Unidade || '-'}</td><td class="px-4 py-4 text-sm text-right font-medium text-slate-400">${formatarMoeda(item.CustoOriginal)}</td><td class="px-4 py-4 text-sm text-right font-medium text-purple-400">${formatarMoeda(item.CustoFinal)}</td><td class="px-4 py-4 text-sm text-right font-bold ${corEcon}">${formatarMoeda(econ)}</td></tr>`; });
-    }
-
-    function renderizarDashboardServicos(dados) {
-        const faturamento = dados.reduce((acc, item) => acc + item.Faturamento, 0);
-        const lucro = dados.reduce((acc, item) => acc + item.Lucro, 0);
-        document.getElementById('kpi-faturamento').textContent = formatarMoeda(faturamento);
-        document.getElementById('kpi-lucro').textContent = formatarMoeda(lucro);
-        document.getElementById('kpi-margem').textContent = formatarPercentual(faturamento > 0 ? (lucro / faturamento) * 100 : 0);
-        document.getElementById('kpi-itens-servico').textContent = dados.length;
-        const faturamentoPorHub = dados.reduce((acc, item) => { if (item.Hub) { acc[item.Hub] = (acc[item.Hub] || 0) + item.Faturamento; } return acc; }, {});
-        const lucroPorCliente = dados.reduce((acc, item) => { if (item.Cliente) { acc[item.Cliente] = (acc[item.Cliente] || 0) + item.Lucro; } return acc; }, {});
-        const corTexto = '#9CA3AF', corGrid = '#475569';
-        
-        if (window.graficoFaturamentoHub) window.graficoFaturamentoHub.destroy();
-        window.graficoFaturamentoHub = new Chart(document.getElementById('chartFaturamentoHub'), {type: 'bar', data: {labels: Object.keys(faturamentoPorHub), datasets:[{label: 'Faturamento', data: Object.values(faturamentoPorHub), backgroundColor: '#38bdf8'}]}, options:{responsive: true, maintainAspectRatio: false, plugins: { legend: {display: false}}, scales: {y: {ticks:{color: corTexto, callback: (v) => formatarMoeda(v)}, grid:{color: corGrid}}, x: {ticks:{color:corTexto}}}}});
-        
-        if (window.graficoLucroCliente) window.graficoLucroCliente.destroy();
-        window.graficoLucroCliente = new Chart(document.getElementById('chartLucroCliente'), {type: 'pie', data: {labels: Object.keys(lucroPorCliente), datasets:[{data: Object.values(lucroPorCliente), backgroundColor: ['#34d399', '#a78bfa', '#fb923c', '#60a5fa', '#f472b6'], borderColor: '#1e293b'}]}, options:{responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: corTexto }}}}});
-        
-        const tabelaCorpo = document.getElementById('tabela-servicos');
-        tabelaCorpo.innerHTML = '';
-        dados.forEach(item => { tabelaCorpo.innerHTML += `<tr class="hover:bg-slate-700/50"><td class="px-4 py-4 text-sm font-medium text-white">${item.Hub || '-'}</td><td class="px-4 py-4 text-sm text-slate-300">${item.Cliente || '-'}</td><td class="px-4 py-4 text-sm text-right font-medium text-sky-400">${formatarMoeda(item.Faturamento)}</td><td class="px-4 py-4 text-sm text-right font-medium text-slate-400">${formatarMoeda(item.Custo)}</td><td class="px-4 py-4 text-sm text-right font-bold text-emerald-400">${formatarMoeda(item.Lucro)}</td></tr>`; });
-    }
-
     // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         setDateHeader();
-        
-        const tabCustosBtn = document.getElementById('tab-custos'), tabServicosBtn = document.getElementById('tab-servicos');
-        const contentCustos = document.getElementById('content-custos'), contentServicos = document.getElementById('content-servicos');
-
-        tabCustosBtn.addEventListener('click', () => {
-            tabCustosBtn.classList.add('active'); tabServicosBtn.classList.remove('active');
-            contentCustos.style.display = 'block'; contentServicos.style.display = 'none';
-        });
-        tabServicosBtn.addEventListener('click', () => {
-            tabServicosBtn.classList.add('active'); tabCustosBtn.classList.remove('active');
-            contentCustos.style.display = 'none'; contentServicos.style.display = 'block';
-        });
-        
-        document.getElementById('refresh-button').addEventListener('click', () => inicializarDashboards(false));
-        document.getElementById('auto-refresh').addEventListener('change', setupAutoRefresh);
-        
-        inicializarDashboards(false);
-        setupAutoRefresh();
+        inicializarDashboard();
+        document.getElementById('refresh-button').addEventListener('click', inicializarDashboard);
     });
 </script>
 
