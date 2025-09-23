@@ -6,9 +6,7 @@
     <title>Dashboard Hubplural</title>
     
     <script src="https://cdn.tailwindcss.com"></script>
-    
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -16,131 +14,50 @@
     <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
     
     <style>
-        body { 
-            font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; /* slate-900 */
-        }
-        .chart-container { 
-            position: relative; 
-            height: 100%; 
-            width: 100%; 
-        }
-        @keyframes spin { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
-        }
-        .spinning { 
-            animation: spin 1s linear infinite; 
-        }
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #1e293b; /* slate-800 */
-        }
-        ::-webkit-scrollbar-thumb {
-            background: #4f46e5; /* indigo-600 */
-            border-radius: 4px;
-        }
-        ::-webkit-scrollbar-thumb:hover {
-            background: #6366f1; /* indigo-500 */
-        }
+        body { font-family: 'Inter', sans-serif; background-color: #0f172a; }
+        .chart-container { position: relative; height: 100%; width: 100%; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinning { animation: spin 1s linear infinite; }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
     </style>
 </head>
 <body class="text-slate-300">
 
 <main class="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
-    
-   <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
-    <div>
-        <h1 class="text-3xl font-bold text-white">Análise Hub Plural</h1>
-        <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
-    </div>
-    <div class="flex items-center gap-4 mt-4 sm:mt-0">
-        <a href="servicos.html" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors">
-            Serviços
-        </a>
-        <button id="refresh-button" class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
-            <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
-            <span>Atualizar</span>
-        </button>
-    </div>
-</header>
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+        <div>
+            <h1 class="text-3xl font-bold text-white">Dashboard de Análise de Economia</h1>
+            <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
+        </div>
+        <div class="flex items-center gap-4 mt-4 sm:mt-0">
+             <a href="./servicos.html" class="px-4 py-2 bg-indigo-600 text-white rounded-lg hover:bg-indigo-500 transition-colors">
+                Serviços
+            </a>
+            <button id="refresh-button" class="flex items-center gap-2 px-4 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
+                <span>Atualizar</span>
+            </button>
+        </div>
+    </header>
 
     <div id="kpi-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="archive-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Valor Anterior</h3>
-                    <p id="kpi-anterior" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Valor Atual</h3>
-                    <p id="kpi-atual" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Economia Total</h3>
-                    <p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p>
-                </div>
-            </div>
-        </div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
-            <div class="flex items-center gap-4">
-                <div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div>
-                <div>
-                    <h3 class="text-sm font-medium text-slate-400">Itens Analisados</h3>
-                    <p id="kpi-itens" class="text-2xl font-semibold text-white mt-1">0</p>
-                </div>
-            </div>
-        </div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="archive-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Valor Anterior</h3><p id="kpi-anterior" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Valor Atual</h3><p id="kpi-atual" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Economia Total</h3><p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Itens Analisados</h3><p id="kpi-itens" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10">
-        <div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col">
-            <h3 class="font-semibold text-white mb-4">Economia por unidade</h3>
-            <div class="chart-container">
-                <canvas id="chartEconomiaFornecedor"></canvas>
-            </div>
-        </div>
-        <div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col">
-            <h3 class="font-semibold text-white mb-4">Valores por Unidade (Anterior vs. Atual)</h3>
-            <div class="chart-container">
-                <canvas id="chartValoresUnidade"></canvas>
-            </div>
-        </div>
+        <div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Economia por Fornecedor</h3><div class="chart-container"><canvas id="chartEconomiaFornecedor"></canvas></div></div>
+        <div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Valores por Unidade (Anterior vs. Atual)</h3><div class="chart-container"><canvas id="chartValoresUnidade"></canvas></div></div>
     </div>
 
     <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5">
         <h3 class="font-semibold text-white mb-4">Detalhamento dos Serviços</h3>
-        <div class="overflow-x-auto">
-            <table class="min-w-full">
-                <thead class="border-b border-slate-700">
-                    <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Descrição do Serviço</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Anterior</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Atual</th>
-                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Economia</th>
-                    </tr>
-                </thead>
-                <tbody id="tabela-servicos" class="divide-y divide-slate-700">
-                    </tbody>
-            </table>
-        </div>
+        <div class="overflow-x-auto"><table class="min-w-full"><thead class="border-b border-slate-700"><tr><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th><th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Descrição do Serviço</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Anterior</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Valor Atual</th><th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Economia</th></tr></thead><tbody id="tabela-servicos" class="divide-y divide-slate-700"></tbody></table></div>
     </div>
 </main>
 <div id="loading-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50">
@@ -150,19 +67,14 @@
 
 
 <script>
-    // ===================================================================
-    // CONFIGURAÇÃO - INSIRA SEU LINK AQUI
-    // ===================================================================
-    // PASSO ÚNICO: Cole o link da sua planilha publicada como CSV.
-    const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv';
-    // Exemplo: 'https://docs.google.com/spreadsheets/d/e/2PACX-1v.../pub?output=csv'
-    // ===================================================================
 
-    // Funções Utilitárias
+    // Insira o Link da planilha publicada
+
+    const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv';
+
     const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
     const parseMoeda = (str) => {
         if (!str || typeof str !== 'string') return 0;
-        // Remove 'R$', espaços, e troca vírgula por ponto.
         const valorNumerico = parseFloat(str.replace(/\./g, '').replace('R$', '').trim().replace(',', '.'));
         return isNaN(valorNumerico) ? 0 : valorNumerico;
     };
@@ -171,14 +83,9 @@
         document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
     }
 
-    // Função Principal para Buscar e Processar os Dados
     async function buscarDadosDaPlanilha() {
         if (!urlDaPlanilhaCSV || urlDaPlanilhaCSV.includes('COLOQUE_SEU_LINK_CSV_AQUI')) {
-            document.getElementById('loading-overlay').innerHTML = `
-                <ion-icon name="warning-outline" class="text-5xl text-amber-400"></ion-icon>
-                <p class="text-white text-lg mt-4">Configuração necessária</p>
-                <p class="text-slate-400 mt-1">Por favor, insira o link da sua planilha CSV no código.</p>
-            `;
+            document.getElementById('loading-overlay').innerHTML = `<ion-icon name="warning-outline" class="text-5xl text-amber-400"></ion-icon><p class="text-white text-lg mt-4">Configuração necessária</p><p class="text-slate-400 mt-1">Por favor, insira o link da sua planilha CSV no código.</p>`;
             throw new Error("URL da planilha não configurada.");
         }
         try {
@@ -186,7 +93,7 @@
             if (!resposta.ok) throw new Error(`Falha na rede: ${resposta.statusText}`);
             
             const dadosCSV = await resposta.text();
-            if (dadosCSV.trim().startsWith('<')) throw new Error("A resposta foi um HTML. Verifique se o link foi publicado como 'CSV' e não como 'Página da web'.");
+            if (dadosCSV.trim().startsWith('<')) throw new Error("A resposta foi um HTML. Verifique se o link foi publicado como 'CSV'.");
 
             const linhas = dadosCSV.trim().split('\n');
             const cabecalho = linhas[0].split(',').map(h => h.trim().replace(/"/g, '').toLowerCase());
@@ -209,10 +116,9 @@
             };
             
             return linhas.slice(1).map(linha => {
-                // Tratamento para CSV com vírgulas dentro dos campos
-                const valores = linha.match(/(".*?"|[^",\s]+)(?=\s*,|\s*$)/g).map(v => v.replace(/"/g, ''));
+                const valores = linha.match(/(".*?"|[^,]+)/g).map(v => v.replace(/"/g, '').trim());
                 
-                const getValor = (index) => valores[index] ? valores[index].trim() : '';
+                const getValor = (index) => valores[index] || '';
                 return {
                     Fornecedor: getValor(indices.fornecedor),
                     Unidade: getValor(indices.unidade),
@@ -221,20 +127,14 @@
                     ValorAtual: parseMoeda(getValor(indices.atual)),
                     Economia: parseMoeda(getValor(indices.economia)),
                 };
-            }).filter(item => item.Fornecedor); // Filtra linhas vazias
+            }).filter(item => item.Fornecedor);
         } catch (error) {
-            document.getElementById('loading-overlay').innerHTML = `
-                <ion-icon name="cloud-offline-outline" class="text-5xl text-red-400"></ion-icon>
-                <p class="text-white text-lg mt-4">Erro ao Carregar Dados</p>
-                <p class="text-slate-400 text-center max-w-sm mt-1">Não foi possível buscar os dados. Verifique o link, a permissão da planilha e sua conexão.</p>
-                <p class="text-xs text-slate-500 mt-4">${error.message}</p>
-            `;
+            document.getElementById('loading-overlay').innerHTML = `<ion-icon name="cloud-offline-outline" class="text-5xl text-red-400"></ion-icon><p class="text-white text-lg mt-4">Erro ao Carregar Dados</p><p class="text-slate-400 text-center max-w-sm mt-1">Não foi possível buscar os dados. Verifique o link, a permissão da planilha e sua conexão.</p><p class="text-xs text-slate-500 mt-4">${error.message}</p>`;
             console.error("Erro ao buscar dados:", error);
             throw error; 
         }
     }
 
-    // Funções de Renderização
     function calcularKPIs(dados) {
         const valorAnterior = dados.reduce((acc, item) => acc + item.ValorAnterior, 0);
         const valorAtual = dados.reduce((acc, item) => acc + item.ValorAtual, 0);
@@ -247,14 +147,10 @@
     }
 
     function renderizarGraficos(dados) {
-        const corTexto = '#9ca3af'; // slate-400
-        const corGrid = '#334155';  // slate-700
+        const corTexto = '#9ca3af', corGrid = '#334155';
         
-        // Gráfico 1: Economia por Fornecedor
         const economiaPorFornecedor = dados.reduce((acc, item) => {
-            if (item.Fornecedor) {
-                acc[item.Fornecedor] = (acc[item.Fornecedor] || 0) + item.Economia;
-            }
+            if (item.Fornecedor) acc[item.Fornecedor] = (acc[item.Fornecedor] || 0) + item.Economia;
             return acc;
         }, {});
         
@@ -263,22 +159,11 @@
             type: 'doughnut', 
             data: { 
                 labels: Object.keys(economiaPorFornecedor), 
-                datasets: [{ 
-                    data: Object.values(economiaPorFornecedor), 
-                    backgroundColor: ['#4f46e5', '#7c3aed', '#a855f7', '#34d399', '#f97316'], 
-                    borderColor: '#1e293b' // slate-800
-                }] 
+                datasets: [{ data: Object.values(economiaPorFornecedor), backgroundColor: ['#4f46e5', '#7c3aed', '#a855f7', '#34d399', '#f97316'], borderColor: '#1e293b' }] 
             },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { position: 'bottom', labels: { color: corTexto, padding: 20 } } 
-                } 
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom', labels: { color: corTexto, padding: 20 } } } }
         });
 
-        // Gráfico 2: Valores por Unidade
         const unidades = [...new Set(dados.map(item => item.Unidade))];
         const dadosAnterior = unidades.map(u => dados.filter(d => d.Unidade === u).reduce((s, i) => s + i.ValorAnterior, 0));
         const dadosAtual = unidades.map(u => dados.filter(d => d.Unidade === u).reduce((s, i) => s + i.ValorAtual, 0));
@@ -289,43 +174,30 @@
             data: {
                 labels: unidades,
                 datasets: [
-                    { label: 'Valor Anterior', data: dadosAnterior, backgroundColor: '#dc2626' /* red-600 */, borderRadius: 4 },
-                    { label: 'Valor Atual', data: dadosAtual, backgroundColor: '#7c3aed' /* purple-600 */, borderRadius: 4 }
+                    { label: 'Valor Anterior', data: dadosAnterior, backgroundColor: '#dc2626', borderRadius: 4 },
+                    { label: 'Valor Atual', data: dadosAtual, backgroundColor: '#7c3aed', borderRadius: 4 }
                 ]
             },
-            options: { 
-                responsive: true, 
-                maintainAspectRatio: false, 
-                plugins: { 
-                    legend: { labels: { color: corTexto } } 
-                }, 
-                scales: { 
-                    y: { beginAtZero: true, ticks: { color: corTexto, callback: (v) => formatarMoeda(v) }, grid: { color: corGrid } }, 
-                    x: { ticks: { color: corTexto }, grid: { display: false } } 
-                } 
-            }
+            options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { labels: { color: corTexto } } }, scales: { y: { beginAtZero: true, ticks: { color: corTexto, callback: (v) => formatarMoeda(v) }, grid: { color: corGrid } }, x: { ticks: { color: corTexto }, grid: { display: false } } } }
         });
     }
 
     function preencherTabela(dados) {
         const tabelaCorpo = document.getElementById('tabela-servicos');
-        tabelaCorpo.innerHTML = ''; // Limpa a tabela antes de preencher
+        tabelaCorpo.innerHTML = '';
         dados.forEach(item => {
             const economiaCor = item.Economia > 0 ? 'text-green-400' : (item.Economia < 0 ? 'text-red-400' : 'text-slate-400');
-            
-            tabelaCorpo.innerHTML += `
-              <tr class="hover:bg-slate-700/50 transition-colors">
-                  <td class="px-4 py-4 text-sm font-medium text-white whitespace-nowrap">${item.Fornecedor || '-'}</td>
-                  <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.Unidade || '-'}</td>
-                  <td class="px-4 py-4 text-sm text-slate-400 max-w-xs truncate" title="${item.Descricao || ''}">${item.Descricao || '-'}</td>
-                  <td class="px-4 py-4 text-sm text-right font-medium text-slate-400 whitespace-nowrap">${formatarMoeda(item.ValorAnterior)}</td>
-                  <td class="px-4 py-4 text-sm text-right font-medium text-purple-400 whitespace-nowrap">${formatarMoeda(item.ValorAtual)}</td>
-                  <td class="px-4 py-4 text-sm text-right font-bold ${economiaCor} whitespace-nowrap">${formatarMoeda(item.Economia)}</td>
-              </tr>`;
+            tabelaCorpo.innerHTML += `<tr class="hover:bg-slate-700/50 transition-colors">
+                <td class="px-4 py-4 text-sm font-medium text-white whitespace-nowrap">${item.Fornecedor || '-'}</td>
+                <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.Unidade || '-'}</td>
+                <td class="px-4 py-4 text-sm text-slate-400 max-w-xs truncate" title="${item.Descricao || ''}">${item.Descricao || '-'}</td>
+                <td class="px-4 py-4 text-sm text-right font-medium text-slate-400 whitespace-nowrap">${formatarMoeda(item.ValorAnterior)}</td>
+                <td class="px-4 py-4 text-sm text-right font-medium text-purple-400 whitespace-nowrap">${formatarMoeda(item.ValorAtual)}</td>
+                <td class="px-4 py-4 text-sm text-right font-bold ${economiaCor} whitespace-nowrap">${formatarMoeda(item.Economia)}</td>
+            </tr>`;
         });
     }
 
-    // Função de Inicialização do Dashboard
     async function inicializarDashboard() {
         document.getElementById('loading-overlay').style.display = 'flex';
         document.getElementById('refresh-icon').classList.add('spinning');
@@ -339,12 +211,7 @@
                 preencherTabela(dadosVivos);
                 document.getElementById('loading-overlay').style.display = 'none';
             } else if (urlDaPlanilhaCSV && !urlDaPlanilhaCSV.includes('COLOQUE_SEU_LINK_CSV_AQUI')) {
-                // Se a URL está configurada mas não retornou dados
-                 document.getElementById('loading-overlay').innerHTML = `
-                    <ion-icon name="document-text-outline" class="text-5xl text-sky-400"></ion-icon>
-                    <p class="text-white text-lg mt-4">Nenhum dado encontrado</p>
-                    <p class="text-slate-400 mt-1">A planilha parece estar vazia ou com formato incorreto.</p>
-                `;
+                document.getElementById('loading-overlay').innerHTML = `<ion-icon name="document-text-outline" class="text-5xl text-sky-400"></ion-icon><p class="text-white text-lg mt-4">Nenhum dado encontrado</p><p class="text-slate-400 mt-1">A planilha parece estar vazia ou com formato incorreto.</p>`;
             }
         } catch (e) {
             // A mensagem de erro já é tratada na função de busca
@@ -353,7 +220,6 @@
         }
     }
     
-    // Event Listeners
     document.addEventListener('DOMContentLoaded', () => {
         setDateHeader();
         inicializarDashboard();
