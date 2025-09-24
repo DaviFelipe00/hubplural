@@ -44,14 +44,14 @@
     </header>
 
     <div id="kpi-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="archive-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Valor Anterior</h3><p id="kpi-anterior" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Valor Atual</h3><p id="kpi-atual" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Economia Total</h3><p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Itens Analisados</h3><p id="kpi-itens" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-red-600/20 text-red-400 rounded-lg flex items-center justify-center"><ion-icon name="archive-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Valor Anterior Mensal</h3><p id="kpi-anterior" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-purple-600/20 text-purple-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Valor Atual Mensal</h3><p id="kpi-atual" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-green-600/20 text-green-400 rounded-lg flex items-center justify-center"><ion-icon name="wallet-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Economia Total Mensal</h3><p id="kpi-economia" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="file-tray-stacked-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Faturamento Atual Total</h3><p id="kpi-itens" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div></div>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10">
-        <div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Economia por unidade</h3><div class="chart-container"><canvas id="chartEconomiaFornecedor"></canvas></div></div>
+        <div class="xl:col-span-2 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Economia por serviço</h3><div class="chart-container"><canvas id="chartEconomiaFornecedor"></canvas></div></div>
         <div class="xl:col-span-3 bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Valores por Unidade (Anterior vs. Atual)</h3><div class="chart-container"><canvas id="chartValoresUnidade"></canvas></div></div>
     </div>
 
@@ -69,7 +69,6 @@
 <script>
 
     // Insira o Link da planilha publicada
-
     const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv';
 
     const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
@@ -112,7 +111,8 @@
                 descricao: encontrarIndice(['descrição do serviço', 'descricao do servico']),
                 anterior: encontrarIndice(['# valor anterior', 'valor anterior']),
                 atual: encontrarIndice(['# valor atual', 'valor atual']),
-                economia: encontrarIndice(['economia'])
+                economia: encontrarIndice(['economia']),
+                dataInstalacao: encontrarIndice(['data de instalação', 'data de instalacao'])
             };
             
             return linhas.slice(1).map(linha => {
@@ -126,25 +126,64 @@
                     ValorAnterior: parseMoeda(getValor(indices.anterior)),
                     ValorAtual: parseMoeda(getValor(indices.atual)),
                     Economia: parseMoeda(getValor(indices.economia)),
+                    DataInstalacao: getValor(indices.dataInstalacao) 
                 };
-            }).filter(item => item.Fornecedor);
+            }).filter(item => item.Fornecedor && item.Fornecedor.trim() !== '');
         } catch (error) {
             document.getElementById('loading-overlay').innerHTML = `<ion-icon name="cloud-offline-outline" class="text-5xl text-red-400"></ion-icon><p class="text-white text-lg mt-4">Erro ao Carregar Dados</p><p class="text-slate-400 text-center max-w-sm mt-1">Não foi possível buscar os dados. Verifique o link, a permissão da planilha e sua conexão.</p><p class="text-xs text-slate-500 mt-4">${error.message}</p>`;
-            console.error("Erro ao buscar dados:", error);
+            console.error("Erro em buscarDadosDaPlanilha:", error);
             throw error; 
         }
     }
-
+    
     function calcularKPIs(dados) {
         const valorAnterior = dados.reduce((acc, item) => acc + item.ValorAnterior, 0);
         const valorAtual = dados.reduce((acc, item) => acc + item.ValorAtual, 0);
         const economia = dados.reduce((acc, item) => acc + item.Economia, 0);
         
+        const hoje = new Date();
+        const faturamentoTotal = dados.reduce((acc, item) => {
+            try {
+                if (!item.ValorAtual || !item.DataInstalacao || typeof item.DataInstalacao !== 'string' || item.DataInstalacao.trim() === '') {
+                    return acc;
+                }
+            
+                const partesData = item.DataInstalacao.split(/[\/\-]/);
+                if (partesData.length !== 3) return acc;
+                
+                const ano = parseInt(partesData[0], 10);
+                const mes = parseInt(partesData[1], 10) - 1;
+                const dia = parseInt(partesData[2], 10);
+                
+                if (isNaN(ano) || isNaN(mes) || isNaN(dia)) {
+                   return acc;
+                }
+
+                const dataInstalacao = new Date(ano, mes, dia);
+
+                if (isNaN(dataInstalacao.getTime()) || dataInstalacao > hoje) {
+                    return acc;
+                }
+
+                const mesesAtivo = (hoje.getFullYear() - dataInstalacao.getFullYear()) * 12 
+                                 + (hoje.getMonth() - dataInstalacao.getMonth()) 
+                                 + 1;
+
+                const contribuicao = mesesAtivo > 0 ? item.ValorAtual * mesesAtivo : 0;
+                return acc + contribuicao;
+
+            } catch (error) {
+                console.error('Erro ao processar um item para o faturamento. Item:', item, 'Erro:', error);
+                return acc;
+            }
+        }, 0);
+
         document.getElementById('kpi-anterior').textContent = formatarMoeda(valorAnterior);
         document.getElementById('kpi-atual').textContent = formatarMoeda(valorAtual);
         document.getElementById('kpi-economia').textContent = formatarMoeda(economia);
-        document.getElementById('kpi-itens').textContent = dados.length;
+        document.getElementById('kpi-itens').textContent = formatarMoeda(faturamentoTotal);
     }
+
 
     function renderizarGraficos(dados) {
         const corTexto = '#9ca3af', corGrid = '#334155';
@@ -214,7 +253,8 @@
                 document.getElementById('loading-overlay').innerHTML = `<ion-icon name="document-text-outline" class="text-5xl text-sky-400"></ion-icon><p class="text-white text-lg mt-4">Nenhum dado encontrado</p><p class="text-slate-400 mt-1">A planilha parece estar vazia ou com formato incorreto.</p>`;
             }
         } catch (e) {
-            // A mensagem de erro já é tratada na função de busca
+            console.error("Ocorreu um erro fatal ao inicializar o dashboard:", e);
+            document.getElementById('loading-overlay').innerHTML = `<ion-icon name="bug-outline" class="text-5xl text-red-400"></ion-icon><p class="text-white text-lg mt-4">Ocorreu um Erro</p><p class="text-slate-400 text-center max-w-sm mt-1">Houve um erro no script que impediu o carregamento. Verifique o console para mais detalhes.</p>`;
         } finally {
             document.getElementById('refresh-icon').classList.remove('spinning');
         }
