@@ -1,0 +1,295 @@
+<!DOCTYPE html>
+<html lang="pt-BR" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard de Contratos - Hub Plural</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.esm.js"></script>
+    <script nomodule src="https://unpkg.com/ionicons@7.1.0/dist/ionicons/ionicons.js"></script>
+    
+    <style>
+        body { 
+            font-family: 'Inter', sans-serif; 
+            background-color: #0f172a;
+        }
+        .chart-container { 
+            position: relative; 
+            height: 100%; 
+            width: 100%; 
+        }
+        @keyframes spin { 
+            from { transform: rotate(0deg); } 
+            to { transform: rotate(360deg); } 
+        }
+        .spinning { 
+            animation: spin 1s linear infinite; 
+        }
+        ::-webkit-scrollbar { width: 8px; height: 8px; }
+        ::-webkit-scrollbar-track { background: #1e293b; }
+        ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+    </style>
+</head>
+<body class="text-slate-300">
+
+<main class="p-4 sm:p-6 lg:p-10 max-w-7xl mx-auto">
+    
+    <header class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10">
+        <div>
+            <a href="index.html" class="text-sm font-semibold text-indigo-400 hover:underline">Hub Plural</a>
+            <h1 class="text-3xl font-bold text-white mt-1">Dashboard de Contratos</h1>
+            <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
+        </div>
+        <div class="flex items-center gap-2 sm:gap-4 mt-4 sm:mt-0">
+            <a href="faturamento.html" class="px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors text-sm sm:text-base">
+                Faturamento
+            </a>
+            <a href="servicos.html" class="px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors text-sm sm:text-base">
+                Serviços
+            </a>
+            <span class="px-3 py-2 bg-indigo-600 text-white rounded-lg font-semibold text-sm sm:text-base">
+                Contratos
+            </span>
+            <button id="refresh-button" class="flex items-center gap-2 px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
+            </button>
+        </div>
+    </header>
+
+    <div id="kpi-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4"><div class="w-12 h-12 bg-sky-600/20 text-sky-400 rounded-lg flex items-center justify-center"><ion-icon name="cash-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Custo Mensal Total</h3><p id="kpi-custo-total" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4"><div class="w-12 h-12 bg-emerald-600/20 text-emerald-400 rounded-lg flex items-center justify-center"><ion-icon name="document-text-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Nº de Contratos</h3><p id="kpi-num-contratos" class="text-2xl font-semibold text-white mt-1">0</p></div></div>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4"><div class="w-12 h-12 bg-amber-600/20 text-amber-400 rounded-lg flex items-center justify-center"><ion-icon name="warning-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Contratos Vencendo (90d)</h3><p id="kpi-vencendo" class="text-2xl font-semibold text-white mt-1">0</p></div></div>
+        </div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300">
+            <div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="analytics-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Média por Contrato</h3><p id="kpi-media-custo" class="text-2xl font-semibold text-white mt-1">R$ 0,00</p></div></div>
+        </div>
+    </div>
+
+    <div class="flex flex-col sm:flex-row gap-4 mb-6 bg-slate-800/50 p-4 rounded-lg">
+        <div class="flex-1">
+            <label for="filtro-unidade" class="block text-sm font-medium text-slate-400 mb-2">Filtrar por Unidade:</label>
+            <select id="filtro-unidade" class="w-full bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                <option value="todos">Todas as Unidades</option>
+            </select>
+        </div>
+        <div class="flex-1">
+            <label for="filtro-fornecedor" class="block text-sm font-medium text-slate-400 mb-2">Filtrar por Fornecedor:</label>
+            <select id="filtro-fornecedor" class="w-full bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+                <option value="todos">Todos os Fornecedores</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-5 gap-6 mb-10">
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col xl:col-span-3"><h3 class="font-semibold text-white mb-4">Custo por Unidade</h3><div class="chart-container"><canvas id="chartCustoUnidade"></canvas></div></div>
+        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col xl:col-span-2"><h3 class="font-semibold text-white mb-4">Custo por Fornecedor</h3><div class="chart-container"><canvas id="chartCustoFornecedor"></canvas></div></div>
+    </div>
+    
+    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5">
+        <h3 class="font-semibold text-white mb-4">Detalhamento dos Contratos</h3>
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="border-b border-slate-700">
+                    <tr>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Serviço / Produto</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Unidade</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Fornecedor</th>
+                        <th class="px-4 py-3 text-right text-xs font-medium text-slate-400 uppercase tracking-wider">Custo Mensal</th>
+                        <th class="px-4 py-3 text-center text-xs font-medium text-slate-400 uppercase tracking-wider">Data Final</th>
+                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Responsável</th>
+                    </tr>
+                </thead>
+                <tbody id="tabela-contratos" class="divide-y divide-slate-700">
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+
+<div id="loading-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 transition-opacity duration-300">
+    <ion-icon name="sync-outline" class="text-5xl text-indigo-400 spinning"></ion-icon>
+    <p class="text-white text-lg mt-4">Carregando dados da planilha...</p>
+</div>
+
+
+<script>
+    // Link da sua planilha publicada como CSV
+    const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAfsfHNzYa__2CsvGwB2k8q5GH98ixoDfjY9ydzUR57iHrdoqAW6VIboUp3TK0uD5c0rKk2LOYbBAY/pub?output=csv'
+    let allData = [];
+
+    const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
+    const parseMoeda = (str) => {
+        if (!str || typeof str !== 'string') return 0;
+        const valorNumerico = parseFloat(str.replace(/\./g, '').replace('R$', '').trim().replace(',', '.'));
+        return isNaN(valorNumerico) ? 0 : valorNumerico;
+    };
+    const parseData = (str) => {
+        if (!str || !/^\d{2}\/\d{2}\/\d{4}$/.test(str)) return null;
+        const [dia, mes, ano] = str.split('/');
+        return new Date(`${ano}-${mes}-${dia}T00:00:00`);
+    };
+
+    function setDateHeader() {
+        document.getElementById('header-date').textContent = new Date().toLocaleDateString('pt-BR', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' });
+    }
+
+    async function buscarDados() {
+        if (!urlPlanilha || urlPlanilha.includes('SEU_LINK_CSV_AQUI')) {
+            throw new Error("URL da planilha não configurada.");
+        }
+        try {
+            const resposta = await fetch(`${urlPlanilha}&t=${new Date().getTime()}`);
+            if (!resposta.ok) throw new Error(`Erro na rede: ${resposta.status}`);
+            const csv = await resposta.text();
+            if (csv.trim().startsWith('<')) throw new Error("A resposta foi um HTML. Verifique se o link foi publicado como 'CSV'.");
+            if (!csv.trim()) return [];
+
+            const linhas = csv.trim().split('\n');
+            const cabecalho = linhas.shift().split(',').map(h => h.trim().toLowerCase());
+            
+            const encontrarIndice = (nomeColuna) => cabecalho.indexOf(nomeColuna);
+
+            const indices = {
+                servico: encontrarIndice('serviço ou produto'),
+                unidade: encontrarIndice('unidade'),
+                fornecedor: encontrarIndice('fornecedor ou cliente'),
+                custo: encontrarIndice('custo'),
+                dataFinal: encontrarIndice('data final'),
+                responsavel: encontrarIndice('responsável'),
+            };
+            
+            if (indices.servico === -1) {
+                throw new Error("A coluna obrigatória 'serviço ou produto' não foi encontrada no seu CSV. Verifique o cabeçalho.");
+            }
+
+            return linhas.map(linha => {
+                const valores = linha.match(/(".*?"|[^",]+)(?=\s*,|\s*$)/g)?.map(v => v.replace(/"/g, '').trim()) || [];
+                const getValor = (index) => (index > -1 && valores[index]) ? valores[index] : '';
+                
+                return {
+                    servico: getValor(indices.servico),
+                    unidade: getValor(indices.unidade),
+                    fornecedor: getValor(indices.fornecedor),
+                    custo: parseMoeda(getValor(indices.custo)),
+                    dataFinal: parseData(getValor(indices.dataFinal)),
+                    responsavel: getValor(indices.responsavel),
+                };
+            }).filter(item => item.servico);
+        } catch (error) {
+            console.error("Erro ao buscar dados:", error);
+            throw error;
+        }
+    }
+
+    function atualizarVisualizacao(dados) {
+        if (!dados) return;
+
+        const custoTotal = dados.reduce((a, i) => a + i.custo, 0);
+        const numContratos = dados.length;
+        
+        const hoje = new Date();
+        const dias90 = new Date();
+        dias90.setDate(hoje.getDate() + 90);
+        
+        const vencendo = dados.filter(d => d.dataFinal && d.dataFinal <= dias90).length;
+
+        document.getElementById('kpi-custo-total').textContent = formatarMoeda(custoTotal);
+        document.getElementById('kpi-num-contratos').textContent = numContratos;
+        document.getElementById('kpi-vencendo').textContent = vencendo;
+        document.getElementById('kpi-media-custo').textContent = formatarMoeda(numContratos > 0 ? custoTotal / numContratos : 0);
+
+        const corTexto = '#9ca3af', corGrid = '#334155';
+        
+        const custoPorUnidade = dados.reduce((a, i) => { if(i.unidade) a[i.unidade] = (a[i.unidade] || 0) + i.custo; return a; }, {});
+        if (window.graficoCustoUnidade) window.graficoCustoUnidade.destroy();
+        window.graficoCustoUnidade = new Chart('chartCustoUnidade', {type: 'bar', data: {labels: Object.keys(custoPorUnidade), datasets: [{label: 'Custo', data: Object.values(custoPorUnidade), backgroundColor: '#38bdf8', borderRadius: 4}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {display: false}}, scales: {y: {ticks: {color: corTexto, callback: (v) => formatarMoeda(v)}, grid: {color: corGrid}}, x: {ticks: {color: corTexto}}}}});
+
+        const custoPorFornecedor = dados.reduce((a, i) => { if(i.fornecedor) a[i.fornecedor] = (a[i.fornecedor] || 0) + i.custo; return a; }, {});
+        if (window.graficoCustoFornecedor) window.graficoCustoFornecedor.destroy();
+        window.graficoCustoFornecedor = new Chart('chartCustoFornecedor', {type: 'doughnut', data: {labels: Object.keys(custoPorFornecedor), datasets: [{data: Object.values(custoPorFornecedor), backgroundColor: ['#4f46e5', '#7c3aed', '#a855f7', '#34d399', '#f97316', '#ec4899'], borderColor: '#1e293b'}]}, options: {responsive: true, maintainAspectRatio: false, plugins: {legend: {position: 'bottom', labels: {color: corTexto, padding: 15}}}}});
+        
+        const tabelaBody = document.getElementById('tabela-contratos');
+        tabelaBody.innerHTML = dados.length > 0 ? dados.map(item => `
+            <tr class="hover:bg-slate-700/50">
+                <td class="px-4 py-4 text-sm font-medium text-white whitespace-nowrap">${item.servico || '-'}</td>
+                <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.unidade || '-'}</td>
+                <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.fornecedor || '-'}</td>
+                <td class="px-4 py-4 text-sm text-right font-medium text-sky-400 whitespace-nowrap">${formatarMoeda(item.custo)}</td>
+                <td class="px-4 py-4 text-sm text-center text-slate-400 whitespace-nowrap">${item.dataFinal ? item.dataFinal.toLocaleDateString('pt-BR') : '-'}</td>
+                <td class="px-4 py-4 text-sm text-slate-300 whitespace-nowrap">${item.responsavel || '-'}</td>
+            </tr>`).join('') : `
+            <tr>
+                <td colspan="6" class="text-center py-10 text-slate-500">Nenhum dado encontrado para os filtros selecionados.</td>
+            </tr>`;
+    }
+    
+    function popularFiltros() {
+        const filtroUnidade = document.getElementById('filtro-unidade');
+        const unidades = [...new Set(allData.map(i => i.unidade).filter(Boolean))].sort();
+        filtroUnidade.innerHTML = '<option value="todos">Todas as Unidades</option>';
+        unidades.forEach(unidade => filtroUnidade.innerHTML += `<option value="${unidade}">${unidade}</option>`);
+
+        const filtroFornecedor = document.getElementById('filtro-fornecedor');
+        const fornecedores = [...new Set(allData.map(i => i.fornecedor).filter(Boolean))].sort();
+        filtroFornecedor.innerHTML = '<option value="todos">Todos os Fornecedores</option>';
+        fornecedores.forEach(fornecedor => filtroFornecedor.innerHTML += `<option value="${fornecedor}">${fornecedor}</option>`);
+    }
+
+    function aplicarFiltros() {
+        const unidade = document.getElementById('filtro-unidade').value;
+        const fornecedor = document.getElementById('filtro-fornecedor').value;
+        let dadosFiltrados = allData;
+        if (unidade !== 'todos') {
+            dadosFiltrados = dadosFiltrados.filter(item => item.unidade === unidade);
+        }
+        if (fornecedor !== 'todos') {
+            dadosFiltrados = dadosFiltrados.filter(item => item.fornecedor === fornecedor);
+        }
+        atualizarVisualizacao(dadosFiltrados);
+    }
+
+    async function inicializarDashboard() {
+        const overlay = document.getElementById('loading-overlay');
+        overlay.style.display = 'flex';
+        overlay.style.opacity = 1;
+        document.getElementById('refresh-icon').classList.add('spinning');
+        
+        try {
+            allData = await buscarDados();
+            if (allData.length > 0) {
+                popularFiltros();
+                atualizarVisualizacao(allData);
+            } else {
+                throw new Error("Nenhum dado encontrado na planilha. Verifique o formato ou se há linhas preenchidas.");
+            }
+            overlay.style.opacity = 0;
+            setTimeout(() => overlay.style.display = 'none', 300);
+        } catch (error) {
+            overlay.innerHTML = `<div class="text-center p-4"><ion-icon name="cloud-offline-outline" class="text-5xl text-red-400"></ion-icon><p class="text-white text-lg mt-4">Erro ao Carregar Dados</p><p class="text-slate-400 text-center max-w-sm mt-1">Verifique o link, permissões da planilha e sua conexão.</p><p class="text-xs text-slate-500 mt-4">${error.message}</p></div>`;
+        } finally {
+            document.getElementById('refresh-icon').classList.remove('spinning');
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        setDateHeader();
+        document.getElementById('refresh-button').addEventListener('click', inicializarDashboard);
+        document.getElementById('filtro-unidade').addEventListener('change', aplicarFiltros);
+        document.getElementById('filtro-fornecedor').addEventListener('change', aplicarFiltros);
+        inicializarDashboard();
+    });
+</script>
+</body>
+</html>
