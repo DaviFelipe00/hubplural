@@ -3,7 +3,7 @@
 Chart.register(ChartDataLabels);
 
 // Link da sua planilha publicada como CSV
-const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTAfsfHNzYa__2CsvGwB2k8q5GH98ixoDfjY9ydzUR57iHrdoqAW6VIboUp3TK0uD5c0rKk2LOYbBAY/pub?output=csv'
+const urlPlanilha = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQd9-r6HRre5GPi71RQ-ejRI7TB1ZVQjJcDGQ06gXiXLcSNzuNyOouKYhQhRvl0s7wVUjHv0Q48NsFW/pub?output=csv'
 let allData = [];
 
 const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);

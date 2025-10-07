@@ -1,6 +1,6 @@
 //Configuração Js do faturamento.
 
-const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vTcbocWsEJJnb0Dwk_jI62Sz2mQFmvIi8qtx45n6xGLrvZ2uaCNDv60PSXQdxKlpUkjnuJ4CkOy0Gm1/pub?output=csv';
+const urlDaPlanilhaCSV = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSez1MAVXyIvsHWS5j_y3atiqjyRl1IBr25PgeC7WgG4q98fHyR8e3MWS0aap2gZ2oNrva6bce8wl_T/pub?output=csv';
 
     const formatarMoeda = (valor) => new Intl.NumberFormat('pt-BR', { style: 'currency', currency: 'BRL' }).format(valor || 0);
     const parseMoeda = (str) => {

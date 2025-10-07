@@ -2,7 +2,7 @@
 // Registra o plugin para os gráficos
 Chart.register(ChartDataLabels);
 
-const urlPlanilhaServicos = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vS2mRxxUdQh89dXvBJKdlfDXEJ8cSqv7vXnjZwW6ZBc98qqE9h0sqEIa4cN6dQskaGigQ-BB1wFnAzU/pub?output=csv';
+const urlPlanilhaServicos = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vQVA9J4hdQ-G6PN9ddTbJonHYEBiFM-t-jQrozO-HeVAIpR01iyq_Pt1e-sCEeKgGOzqRAw9Z4cT1-e/pub?output=csv';
 
 let allServicosData = [];
 

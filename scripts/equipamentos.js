@@ -1,6 +1,6 @@
 
 // ⚠️ SUBSTITUA ESTE LINK PELO SEU LINK CSV REAL DA PLANILHA PUBLICADA!
-const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSDD-V7Vi7H_NZSVRbRExTrTtHfnaVCnX1mqTz9gekPtbR8xn2w3ckeBoEoAkMXzaaxQ16AtGYrkWmp/pub?output=csv'; 
+const CSV_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vRX6YPq3KN_-WwHebeZxQvxlqYgrsXs_mqQLS3CAwu9aZGDQlVO8PPj-mRJIa6kVWr5RL-qxZeht7Ku/pub?output=csv'; 
 
 let allEquipamentosData = [];
 
