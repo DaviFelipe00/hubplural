@@ -17,19 +17,100 @@
   <style>
     body {
       font-family: 'Inter', sans-serif;
-      background: radial-gradient(circle at top, #1e293b, #0f172a);
+      background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #1e293b 100%);
       min-height: 100vh;
       display: flex;
       flex-direction: column;
+      position: relative;
+      overflow-x: hidden;
     }
+    
+    body::before {
+      content: '';
+      position: fixed;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: radial-gradient(circle at 50% 50%, rgba(99, 102, 241, 0.15) 0%, transparent 50%),
+                  radial-gradient(circle at 80% 20%, rgba(139, 92, 246, 0.1) 0%, transparent 50%),
+                  radial-gradient(circle at 20% 80%, rgba(59, 130, 246, 0.1) 0%, transparent 50%);
+      animation: float 20s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 0;
+    }
+    
+    @keyframes float {
+      0%, 100% { transform: translate(0, 0) rotate(0deg); }
+      33% { transform: translate(30px, -30px) rotate(5deg); }
+      66% { transform: translate(-20px, 20px) rotate(-5deg); }
+    }
+    
+    main {
+      position: relative;
+      z-index: 1;
+    }
+    
+    .hub-card {
+      background: rgba(30, 41, 59, 0.6);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
     .hub-card:hover {
-      box-shadow: 0 0 20px rgba(79, 70, 229, 0.3), 0 0 8px rgba(79, 70, 229, 0.25);
+      background: rgba(30, 41, 59, 0.8);
+      border-color: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
+                  0 0 30px rgba(99, 102, 241, 0.3),
+                  inset 0 1px 0 rgba(255, 255, 255, 0.1);
+      transform: translateY(-8px) scale(1.02);
     }
+    
+    .icon-container {
+      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+    
+    .hub-card:hover .icon-container {
+      transform: scale(1.15) rotate(5deg);
+    }
+    
+    .hub-card:hover .icon-container ion-icon {
+      animation: pulse 1.5s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.7; }
+    }
+    
     .logo-container img {
-      transition: transform 0.3s ease;
+      transition: transform 0.4s ease, filter 0.4s ease;
+      filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.3));
     }
+    
     .logo-container img:hover {
-      transform: scale(1.08);
+      transform: scale(1.1) translateY(-2px);
+      filter: drop-shadow(0 8px 16px rgba(99, 102, 241, 0.4));
+    }
+    
+    h1 {
+      background: linear-gradient(135deg, #ffffff 0%, #e0e7ff 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      text-shadow: 0 2px 20px rgba(99, 102, 241, 0.3);
+    }
+    
+    .card-title {
+      transition: color 0.3s ease;
+    }
+    
+    .hub-card:hover .card-title {
+      background: linear-gradient(135deg, #ffffff 0%, #c7d2fe 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
     }
   </style>
 </head>
@@ -39,80 +120,80 @@
   <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 w-full">
     <div class="max-w-7xl w-full">
       <header class="text-center mb-10 md:mb-14">
-        <div class="logo-container flex items-center justify-center space-x-6">
-          <img src="img/logo_rioave.png" alt="Logo Rio Ave" class="h-12 md:h-16">
-          <img src="img/logo_hubplural.png" alt="Logo Hub Plural" class="h-12 md:h-12">
+        <div class="logo-container flex items-center justify-center space-x-6 mb-8">
+          <img src="img/logo_rioave.png" alt="Logo Rio Ave" class="h-14 md:h-20">
+          <img src="img/logo_hubplural.png" alt="Logo Hub Plural" class="h-14 md:h-14">
         </div>
-        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold text-white mt-6">Bem-vindo ao seu Painel de Controle</h1>
-        <p class="text-slate-400 mt-2 text-base sm:text-lg">Selecione uma área para começar a análise.</p>
+        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mt-6 mb-4">Bem-vindo ao seu Painel de Controle</h1>
+        <p class="text-slate-400 mt-3 text-base sm:text-lg font-medium">Selecione uma área para começar a análise.</p>
       </header>
 
       <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full">
 
-        <a href="faturamento.html" class="hub-card group flex flex-col bg-slate-800/90 p-6 md:p-8 rounded-2xl shadow-lg ring-1 ring-white/10 hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <a href="faturamento.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
           <div class="flex flex-col items-center text-center flex-grow">
-            <div class="w-16 h-16 bg-emerald-600/20 text-emerald-400 rounded-xl flex items-center justify-center mb-6 group-hover:bg-emerald-500/30 transition-colors flex-shrink-0">
-              <ion-icon name="cash-outline" class="text-4xl"></ion-icon>
+            <div class="icon-container w-20 h-20 bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-emerald-500/20">
+              <ion-icon name="cash-outline" class="text-5xl"></ion-icon>
             </div>
-            <h2 class="text-lg font-bold text-white mb-2">Faturamento Geral</h2>
-            <p class="text-slate-400 text-sm">Visualize o desempenho financeiro consolidado, acompanhe receitas e métricas chave de faturamento.</p>
+            <h2 class="card-title text-xl font-bold text-white mb-3">Faturamento Geral</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">Visualize o desempenho financeiro consolidado, acompanhe receitas e métricas chave de faturamento.</p>
           </div>
         </a>
 
-        <a href="servicos.html" class="hub-card group flex flex-col bg-slate-800/90 p-6 md:p-8 rounded-2xl shadow-lg ring-1 ring-white/10 hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <a href="servicos.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
           <div class="flex flex-col items-center text-center flex-grow">
-            <div class="w-16 h-16 bg-sky-600/20 text-sky-400 rounded-xl flex items-center justify-center mb-6 group-hover:bg-sky-500/30 transition-colors flex-shrink-0">
-              <ion-icon name="analytics-outline" class="text-4xl"></ion-icon>
+            <div class="icon-container w-20 h-20 bg-gradient-to-br from-sky-500/30 to-sky-600/20 text-sky-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-sky-500/20">
+              <ion-icon name="analytics-outline" class="text-5xl"></ion-icon>
             </div>
-            <h2 class="text-lg font-bold text-white mb-2">Análise de Serviços</h2>
-            <p class="text-slate-400 text-sm">Explore o detalhamento dos serviços prestados, custos, lucros e performance por unidade e cliente.</p>
+            <h2 class="card-title text-xl font-bold text-white mb-3">Análise de Serviços</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">Explore o detalhamento dos serviços prestados, custos, lucros e performance por unidade e cliente.</p>
           </div>
         </a>
 
-        <a href="contratos.html" class="hub-card group flex flex-col bg-slate-800/90 p-6 md:p-8 rounded-2xl shadow-lg ring-1 ring-white/10 hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <a href="contratos.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
           <div class="flex flex-col items-center text-center flex-grow">
-            <div class="w-16 h-16 bg-amber-600/20 text-amber-400 rounded-xl flex items-center justify-center mb-6 group-hover:bg-amber-500/30 transition-colors flex-shrink-0">
-              <ion-icon name="document-text-outline" class="text-4xl"></ion-icon>
+            <div class="icon-container w-20 h-20 bg-gradient-to-br from-amber-500/30 to-amber-600/20 text-amber-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-amber-500/20">
+              <ion-icon name="document-text-outline" class="text-5xl"></ion-icon>
             </div>
-            <h2 class="text-lg font-bold text-white mb-2">Gestão de Contratos</h2>
-            <p class="text-slate-400 text-sm">Gerencie seus contratos, datas de vencimento, custos e responsáveis em um único dashboard interativo.</p>
+            <h2 class="card-title text-xl font-bold text-white mb-3">Gestão de Contratos</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">Gerencie seus contratos, datas de vencimento, custos e responsáveis em um único dashboard interativo.</p>
           </div>
         </a>
 
-        <a href="equipamentos.html" class="hub-card group flex flex-col bg-slate-800/90 p-6 md:p-8 rounded-2xl shadow-lg ring-1 ring-white/10 hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <a href="equipamentos.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
           <div class="flex flex-col items-center text-center flex-grow">
-            <div class="w-16 h-16 bg-indigo-600/20 text-indigo-400 rounded-xl flex items-center justify-center mb-6 group-hover:bg-indigo-500/30 transition-colors flex-shrink-0">
-              <ion-icon name="hardware-chip-outline" class="text-4xl"></ion-icon>
+            <div class="icon-container w-20 h-20 bg-gradient-to-br from-indigo-500/30 to-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-indigo-500/20">
+              <ion-icon name="hardware-chip-outline" class="text-5xl"></ion-icon>
             </div>
-            <h2 class="text-lg font-bold text-white mb-2">Catálogo de Equipamentos</h2>
-            <p class="text-slate-400 text-sm">Acesse o inventário de equipamentos, monitore status, localização e manutenção dos ativos.</p>
+            <h2 class="card-title text-xl font-bold text-white mb-3">Catálogo de Equipamentos</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">Acesse o inventário de equipamentos, monitore status, localização e manutenção dos ativos.</p>
           </div>
         </a>
 
-        <a href="https://hubomie.vercel.app/" class="hub-card group flex flex-col bg-slate-800/90 p-6 md:p-8 rounded-2xl shadow-lg ring-1 ring-white/10 hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <a href="https://hubomie.vercel.app/" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
           <div class="flex flex-col items-center text-center flex-grow">
-            <div class="w-16 h-16 bg-purple-600/20 text-purple-400 rounded-xl flex items-center justify-center mb-6 group-hover:bg-purple-500/30 transition-colors flex-shrink-0">
-              <ion-icon name="cloud-outline" class="text-4xl"></ion-icon>
+            <div class="icon-container w-20 h-20 bg-gradient-to-br from-purple-500/30 to-purple-600/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-purple-500/20">
+              <ion-icon name="cloud-outline" class="text-5xl"></ion-icon>
             </div>
-            <h2 class="text-lg font-bold text-white mb-2">Integração Omie</h2>
-            <p class="text-slate-400 text-sm">Análise de despesas de TI e fornecedores diretamente da API do sistema de gestão Omie.</p>
+            <h2 class="card-title text-xl font-bold text-white mb-3">Integração Omie</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">Análise de despesas de TI e fornecedores diretamente da API do sistema de gestão Omie.</p>
           </div>
         </a>
 
-        <a href="glpi.html" class="hub-card group flex flex-col bg-slate-800/90 p-6 md:p-8 rounded-2xl shadow-lg ring-1 ring-white/10 hover:-translate-y-1 transition-all duration-300 ease-in-out">
+        <a href="glpi.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
           <div class="flex flex-col items-center text-center flex-grow">
-            <div class="w-16 h-16 bg-rose-600/20 text-rose-400 rounded-xl flex items-center justify-center mb-6 group-hover:bg-rose-500/30 transition-colors flex-shrink-0">
-              <ion-icon name="build-outline" class="text-4xl"></ion-icon>
+            <div class="icon-container w-20 h-20 bg-gradient-to-br from-rose-500/30 to-rose-600/20 text-rose-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-rose-500/20">
+              <ion-icon name="build-outline" class="text-5xl"></ion-icon>
             </div>
-            <h2 class="text-lg font-bold text-white mb-2">Chamados GLPI</h2>
-            <p class="text-slate-400 text-sm">Acompanhe o status dos chamados de suporte, visualize o SLA e métricas de atendimento.</p>
+            <h2 class="card-title text-xl font-bold text-white mb-3">Chamados GLPI</h2>
+            <p class="text-slate-400 text-sm leading-relaxed">Acompanhe o status dos chamados de suporte, visualize o SLA e métricas de atendimento.</p>
           </div>
         </a>
       </section>
     </div>
   </main>
 
-  <footer class="flex flex-col items-center justify-center p-6 mt-auto space-y-3 border-t border-slate-700/50">
+  <footer class="flex flex-col items-center justify-center p-6 mt-auto space-y-3 border-t border-slate-700/50 relative z-10">
     <div class="logo-container flex items-center space-x-3">
       <img src="img/logo_rioave.png" alt="Logo Rio Ave" class="h-10">
       <span class="text-slate-500">|</span>

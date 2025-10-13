@@ -17,25 +17,69 @@
     <style>
         body { 
             font-family: 'Inter', sans-serif; 
-            background-color: #0f172a; /* slate-900 */
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 50%, #0f172a 100%);
+            position: relative;
+            min-height: 100vh;
         }
-        .chart-container { 
-            position: relative; 
-            height: 100%; 
-            width: 100%; 
+        body::before {
+            content: '';
+            position: fixed;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(99, 102, 241, 0.08) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(139, 92, 246, 0.06) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+            pointer-events: none;
+            z-index: 0;
         }
-        @keyframes spin { 
-            from { transform: rotate(0deg); } 
-            to { transform: rotate(360deg); } 
+        @keyframes float {
+            0%, 100% { transform: translate(0, 0) rotate(0deg); }
+            50% { transform: translate(30px, 30px) rotate(5deg); }
         }
-        .spinning { 
-            animation: spin 1s linear infinite; 
-        }
-        /* Estilos de Scrollbar Dark Mode */
+        main { position: relative; z-index: 1; }
+        .chart-container { position: relative; height: 100%; width: 100%; }
+        @keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+        .spinning { animation: spin 1s linear infinite; }
         ::-webkit-scrollbar { width: 8px; height: 8px; }
         ::-webkit-scrollbar-track { background: #1e293b; }
         ::-webkit-scrollbar-thumb { background: #4f46e5; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #6366f1; }
+        .logo-container img {
+            transition: all 0.3s ease;
+            filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.3));
+        }
+        .logo-container img:hover {
+            transform: scale(1.08);
+            filter: drop-shadow(0 4px 12px rgba(99, 102, 241, 0.4));
+        }
+        .kpi-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            transition: all 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 12px 24px rgba(99, 102, 241, 0.2);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+        .chart-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .filter-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.6) 0%, rgba(51, 65, 85, 0.4) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+        }
+        .table-card {
+            background: linear-gradient(135deg, rgba(30, 41, 59, 0.8) 0%, rgba(51, 65, 85, 0.6) 100%);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
     </style>
 </head>
 <body class="text-slate-300">
@@ -50,77 +94,114 @@
         <img src="img/logo_hubplural.png" alt="Logo Hub Plural" class="h-12 md:h-12 inline-block">
       </a>
     </div>
-    <p id="header-date" class="text-slate-400 mt-1">Carregando data...</p>
+    <p id="header-date" class="text-slate-400 mt-1 text-sm">Carregando data...</p>
   </div>
   
-  <div class="flex items-center gap-2 sm:gap-4 mt-4 sm:mt-0">
-    <a href="faturamento.html" class="px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors text-sm sm:text-base">
+  <div class="flex items-center gap-2 sm:gap-3 mt-4 sm:mt-0 flex-wrap">
+    <a href="faturamento.html" class="px-4 py-2.5 bg-slate-800/80 backdrop-blur-sm text-slate-300 rounded-lg hover:bg-slate-700/80 transition-all text-sm sm:text-base border border-slate-700/50">
       Faturamento
     </a>
-    <a href="servicos.html" class="px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors text-sm sm:text-base">
+    <a href="servicos.html" class="px-4 py-2.5 bg-slate-800/80 backdrop-blur-sm text-slate-300 rounded-lg hover:bg-slate-700/80 transition-all text-sm sm:text-base border border-slate-700/50">
       Serviços
     </a>
-    <a href="contratos.html" class="px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors text-sm sm:text-base">
+    <a href="contratos.html" class="px-4 py-2.5 bg-slate-800/80 backdrop-blur-sm text-slate-300 rounded-lg hover:bg-slate-700/80 transition-all text-sm sm:text-base border border-slate-700/50">
       Contratos
     </a>
-    <a href="equipamentos.html" class="px-3 py-2 bg-indigo-600 text-white rounded-lg font-semibold text-sm sm:text-base shadow-md shadow-indigo-600/30">
+    <a href="equipamentos.html" class="px-4 py-2.5 bg-gradient-to-r from-indigo-600 to-indigo-500 text-white rounded-lg font-semibold text-sm sm:text-base shadow-lg shadow-indigo-600/30 hover:shadow-indigo-600/50 transition-all">
       Equipamentos
     </a>
-    <button id="refresh-button" class="flex items-center gap-2 px-3 py-2 bg-slate-800 text-slate-300 rounded-lg hover:bg-slate-700/70 transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500">
+    <button id="refresh-button" class="flex items-center gap-2 px-4 py-2.5 bg-slate-800/80 backdrop-blur-sm text-slate-300 rounded-lg hover:bg-slate-700/80 transition-all focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-slate-700/50">
       <ion-icon name="refresh-outline" id="refresh-icon" class="text-xl"></ion-icon>
     </button>
   </div>
 </header>
 
     <div id="kpi-container" class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-sky-600/20 text-sky-400 rounded-lg flex items-center justify-center"><ion-icon name="server-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Total de Ativos</h3><p id="kpi-total-ativos" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-amber-600/20 text-amber-400 rounded-lg flex items-center justify-center"><ion-icon name="build-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Necessita Reparo</h3><p id="kpi-necessita-reparo" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 transform hover:scale-105 transition-transform duration-300"><div class="flex items-center gap-4"><div class="w-12 h-12 bg-indigo-600/20 text-indigo-400 rounded-lg flex items-center justify-center"><ion-icon name="calendar-outline" class="text-2xl"></ion-icon></div><div><h3 class="text-sm font-medium text-slate-400">Manutenção Atrasada (> 6 Meses)</h3><p id="kpi-atraso-manutencao" class="text-2xl font-semibold text-white mt-1">0</p></div></div></div>
+        <div class="kpi-card p-6 rounded-2xl shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-sky-500/20 to-sky-600/10 text-sky-400 rounded-xl flex items-center justify-center shadow-lg shadow-sky-500/20">
+                    <ion-icon name="server-outline" class="text-3xl"></ion-icon>
+                </div>
+                <div>
+                    <h3 class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Total de Ativos</h3>
+                    <p id="kpi-total-ativos" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="kpi-card p-6 rounded-2xl shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-amber-500/20 to-amber-600/10 text-amber-400 rounded-xl flex items-center justify-center shadow-lg shadow-amber-500/20">
+                    <ion-icon name="build-outline" class="text-3xl"></ion-icon>
+                </div>
+                <div>
+                    <h3 class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Necessita Reparo</h3>
+                    <p id="kpi-necessita-reparo" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+        </div>
+        <div class="kpi-card p-6 rounded-2xl shadow-xl">
+            <div class="flex items-center gap-4">
+                <div class="w-14 h-14 bg-gradient-to-br from-indigo-500/20 to-indigo-600/10 text-indigo-400 rounded-xl flex items-center justify-center shadow-lg shadow-indigo-500/20">
+                    <ion-icon name="calendar-outline" class="text-3xl"></ion-icon>
+                </div>
+                <div>
+                    <h3 class="text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Manutenção Atrasada (> 6 Meses)</h3>
+                    <p id="kpi-atraso-manutencao" class="text-2xl font-bold text-white">0</p>
+                </div>
+            </div>
+        </div>
     </div>
 
-    <div class="mb-6 bg-slate-800/50 p-4 rounded-lg">
+    <div class="mb-6 filter-card p-5 rounded-xl">
         <label for="filtro-localizacao" class="block text-sm font-medium text-slate-400 mb-2">Filtrar por Localização:</label>
-        <select id="filtro-localizacao" class="w-full sm:w-1/3 bg-slate-700 border border-slate-600 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
+        <select id="filtro-localizacao" class="w-full sm:w-1/3 bg-slate-700/80 backdrop-blur-sm border border-slate-600/50 text-white text-sm rounded-lg focus:ring-indigo-500 focus:border-indigo-500 block p-2.5">
             <option value="todos">Todas as Localizações</option>
         </select>
     </div>
 
     <div class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-10">
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Distribuição de Status dos Ativos</h3><div class="chart-container"><canvas id="chartStatus"></canvas></div></div>
-        <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5 h-[400px] flex flex-col"><h3 class="font-semibold text-white mb-4">Equipamentos por Localização</h3><div class="chart-container"><canvas id="chartLocalizacao"></canvas></div></div>
+        <div class="chart-card p-6 rounded-2xl shadow-xl h-[400px] flex flex-col">
+            <h3 class="font-semibold text-white mb-4 text-lg">Distribuição de Status dos Ativos</h3>
+            <div class="chart-container"><canvas id="chartStatus"></canvas></div>
+        </div>
+        <div class="chart-card p-6 rounded-2xl shadow-xl h-[400px] flex flex-col">
+            <h3 class="font-semibold text-white mb-4 text-lg">Equipamentos por Localização</h3>
+            <div class="chart-container"><canvas id="chartLocalizacao"></canvas></div>
+        </div>
     </div>
     
-    <div class="bg-slate-800 p-6 rounded-xl shadow-lg ring-1 ring-white/5">
-        <h3 class="font-semibold text-white mb-4">Detalhamento dos Equipamentos</h3>
+    <div class="table-card p-6 rounded-2xl shadow-xl">
+        <h3 class="font-semibold text-white mb-6 text-lg">Detalhamento dos Equipamentos</h3>
         <div class="overflow-x-auto">
             <table class="min-w-full">
-                <thead class="border-b border-slate-700">
+                <thead class="border-b border-slate-700/50">
                     <tr>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Tag do Equipamento</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Nome do Equipamento</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Localização</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Status</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Data Manutenção</th>
-                        <th class="px-4 py-3 text-left text-xs font-medium text-slate-400 uppercase tracking-wider">Observações</th>
+                        <th class="px-4 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Tag do Equipamento</th>
+                        <th class="px-4 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Nome do Equipamento</th>
+                        <th class="px-4 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Localização</th>
+                        <th class="px-4 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Status</th>
+                        <th class="px-4 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Data Manutenção</th>
+                        <th class="px-4 py-4 text-left text-xs font-semibold text-slate-400 uppercase tracking-wider">Observações</th>
                     </tr>
                 </thead>
-                <tbody id="tabela-equipamentos" class="divide-y divide-slate-700">
-                    </tbody>
+                <tbody id="tabela-equipamentos" class="divide-y divide-slate-700/50">
+                </tbody>
             </table>
         </div>
     </div>
 </main>
-<div id="loading-overlay" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm flex flex-col items-center justify-center z-50 transition-opacity duration-300">
-    <ion-icon name="sync-outline" class="text-5xl text-indigo-400 spinning"></ion-icon>
-    <p class="text-white text-lg mt-4">Carregando dados da planilha...</p>
+
+<div id="loading-overlay" class="fixed inset-0 bg-slate-900/90 backdrop-blur-md flex flex-col items-center justify-center z-50 transition-opacity duration-300">
+    <ion-icon name="sync-outline" class="text-6xl text-indigo-400 spinning"></ion-icon>
+    <p class="text-white text-lg mt-6 font-medium">Carregando dados da planilha...</p>
 </div>
 
 <script src="scripts/equipamentos.js" defer></script>
 
-<footer class="flex flex-col items-center justify-center p-6 space-y-4 ">
+<footer class="flex flex-col items-center justify-center p-6 space-y-4 border-t border-slate-700/30 backdrop-blur-sm relative z-10">
   <div class="logo-container flex items-center space-x-3">
     <img src="img/logo_rioave.png" alt="Logo Rio Ave" class="h-10">
-    <span class="text-slate-400">|</span>
+    <span class="text-slate-500">|</span>
     <img src="img/logo_hubplural.png" alt="Logo Hub Plural" class="h-7">
   </div>
   <p class="text-sm text-slate-500">&copy; 2025 Rio Ave. Todos os direitos reservados.</p>
