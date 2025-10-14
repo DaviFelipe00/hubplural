@@ -55,24 +55,24 @@
       background: rgba(30, 41, 59, 0.6);
       backdrop-filter: blur(12px);
       border: 1px solid rgba(255, 255, 255, 0.1);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .hub-card:hover {
       background: rgba(30, 41, 59, 0.8);
       border-color: rgba(255, 255, 255, 0.2);
-      box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), 
-                  0 0 30px rgba(99, 102, 241, 0.3),
+      box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 
+                  0 0 20px rgba(99, 102, 241, 0.2),
                   inset 0 1px 0 rgba(255, 255, 255, 0.1);
-      transform: translateY(-8px) scale(1.02);
+      transform: translateY(-4px) scale(1.01);
     }
     
     .icon-container {
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .hub-card:hover .icon-container {
-      transform: scale(1.15) rotate(5deg);
+      transform: scale(1.1) rotate(3deg);
     }
     
     .hub-card:hover .icon-container ion-icon {
@@ -112,6 +112,12 @@
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
+    
+    .panel-container {
+      background: rgba(15, 23, 42, 0.4);
+      backdrop-filter: blur(8px);
+      border: 1px solid rgba(255, 255, 255, 0.05);
+    }
   </style>
 </head>
 
@@ -119,81 +125,79 @@
 
   <main class="flex-grow flex flex-col items-center justify-center p-4 sm:p-6 lg:p-8 w-full">
     <div class="max-w-7xl w-full">
-      <header class="text-center mb-10 md:mb-14">
-        <div class="logo-container flex items-center justify-center space-x-6 mb-8">
-          <img src="img/logo_rioave.png" alt="Logo Rio Ave" class="h-14 md:h-20">
-          <img src="img/logo_hubplural.png" alt="Logo Hub Plural" class="h-12 md:h-12">
-        </div>
-        <h1 class="text-3xl sm:text-4xl md:text-5xl font-bold mt-6 mb-4">Bem-vindo ao seu Painel de Controle</h1>
-        <p class="text-slate-400 mt-3 text-base sm:text-lg font-medium">Selecione uma área para começar a análise.</p>
+      <header class="text-center mb-6 md:mb-8">
+        <h1 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2">Painel de Gerenciamento de Inocação e Tecnologia</h1>
+        <p class="text-slate-400 text-sm sm:text-base font-medium">Selecione uma área para começar a análise.</p>
       </header>
 
-      <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 w-full">
+      <div class="panel-container rounded-2xl p-4 md:p-6">
+        <section class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 lg:gap-5 w-full">
 
-        <a href="faturamento.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
-          <div class="flex flex-col items-center text-center flex-grow">
-            <div class="icon-container w-20 h-20 bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 text-emerald-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-emerald-500/20">
-              <ion-icon name="cash-outline" class="text-5xl"></ion-icon>
+          <a href="faturamento.html" class="hub-card group flex flex-col p-5 md:p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col items-center text-center flex-grow">
+              <div class="icon-container w-14 h-14 bg-gradient-to-br from-emerald-500/30 to-emerald-600/20 text-emerald-400 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 shadow-lg shadow-emerald-500/20">
+                <ion-icon name="cash-outline" class="text-3xl"></ion-icon>
+              </div>
+              <h2 class="card-title text-lg font-bold text-white mb-2">Faturamento Geral</h2>
+              <p class="text-slate-400 text-xs leading-relaxed">Visualize o desempenho financeiro consolidado e métricas chave.</p>
             </div>
-            <h2 class="card-title text-xl font-bold text-white mb-3">Faturamento Geral</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">Visualize o desempenho financeiro consolidado, acompanhe receitas e métricas chave de faturamento.</p>
-          </div>
-        </a>
+          </a>
 
-        <a href="servicos.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
-          <div class="flex flex-col items-center text-center flex-grow">
-            <div class="icon-container w-20 h-20 bg-gradient-to-br from-sky-500/30 to-sky-600/20 text-sky-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-sky-500/20">
-              <ion-icon name="analytics-outline" class="text-5xl"></ion-icon>
+          <a href="servicos.html" class="hub-card group flex flex-col p-5 md:p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col items-center text-center flex-grow">
+              <div class="icon-container w-14 h-14 bg-gradient-to-br from-sky-500/30 to-sky-600/20 text-sky-400 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 shadow-lg shadow-sky-500/20">
+                <ion-icon name="analytics-outline" class="text-3xl"></ion-icon>
+              </div>
+              <h2 class="card-title text-lg font-bold text-white mb-2">Análise de Serviços</h2>
+              <p class="text-slate-400 text-xs leading-relaxed">Explore serviços prestados, custos, lucros e performance.</p>
             </div>
-            <h2 class="card-title text-xl font-bold text-white mb-3">Análise de Serviços</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">Explore o detalhamento dos serviços prestados, custos, lucros e performance por unidade e cliente.</p>
-          </div>
-        </a>
+          </a>
 
-        <a href="contratos.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
-          <div class="flex flex-col items-center text-center flex-grow">
-            <div class="icon-container w-20 h-20 bg-gradient-to-br from-amber-500/30 to-amber-600/20 text-amber-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-amber-500/20">
-              <ion-icon name="document-text-outline" class="text-5xl"></ion-icon>
+          <a href="contratos.html" class="hub-card group flex flex-col p-5 md:p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col items-center text-center flex-grow">
+              <div class="icon-container w-14 h-14 bg-gradient-to-br from-amber-500/30 to-amber-600/20 text-amber-400 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 shadow-lg shadow-amber-500/20">
+                <ion-icon name="document-text-outline" class="text-3xl"></ion-icon>
+              </div>
+              <h2 class="card-title text-lg font-bold text-white mb-2">Gestão de Contratos</h2>
+              <p class="text-slate-400 text-xs leading-relaxed">Gerencie contratos, vencimentos e custos em um dashboard.</p>
             </div>
-            <h2 class="card-title text-xl font-bold text-white mb-3">Gestão de Contratos</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">Gerencie seus contratos, datas de vencimento, custos e responsáveis em um único dashboard interativo.</p>
-          </div>
-        </a>
+          </a>
 
-        <a href="equipamentos.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
-          <div class="flex flex-col items-center text-center flex-grow">
-            <div class="icon-container w-20 h-20 bg-gradient-to-br from-indigo-500/30 to-indigo-600/20 text-indigo-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-indigo-500/20">
-              <ion-icon name="hardware-chip-outline" class="text-5xl"></ion-icon>
+          <a href="equipamentos.html" class="hub-card group flex flex-col p-5 md:p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col items-center text-center flex-grow">
+              <div class="icon-container w-14 h-14 bg-gradient-to-br from-indigo-500/30 to-indigo-600/20 text-indigo-400 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 shadow-lg shadow-indigo-500/20">
+                <ion-icon name="hardware-chip-outline" class="text-3xl"></ion-icon>
+              </div>
+              <h2 class="card-title text-lg font-bold text-white mb-2">Catálogo de Equipamentos</h2>
+              <p class="text-slate-400 text-xs leading-relaxed">Acesse o inventário, monitore status e manutenção dos ativos.</p>
             </div>
-            <h2 class="card-title text-xl font-bold text-white mb-3">Catálogo de Equipamentos</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">Acesse o inventário de equipamentos, monitore status, localização e manutenção dos ativos.</p>
-          </div>
-        </a>
+          </a>
 
-        <a href="https://hubomie.vercel.app/" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
-          <div class="flex flex-col items-center text-center flex-grow">
-            <div class="icon-container w-20 h-20 bg-gradient-to-br from-purple-500/30 to-purple-600/20 text-purple-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-purple-500/20">
-              <ion-icon name="cloud-outline" class="text-5xl"></ion-icon>
+          <a href="https://hubomie.vercel.app/" class="hub-card group flex flex-col p-5 md:p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col items-center text-center flex-grow">
+              <div class="icon-container w-14 h-14 bg-gradient-to-br from-purple-500/30 to-purple-600/20 text-purple-400 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 shadow-lg shadow-purple-500/20">
+                <ion-icon name="cloud-outline" class="text-3xl"></ion-icon>
+              </div>
+              <h2 class="card-title text-lg font-bold text-white mb-2">Integração Omie</h2>
+              <p class="text-slate-400 text-xs leading-relaxed">Análise de despesas de TI diretamente da API do Omie.</p>
             </div>
-            <h2 class="card-title text-xl font-bold text-white mb-3">Integração Omie</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">Análise de despesas de TI e fornecedores diretamente da API do sistema de gestão Omie.</p>
-          </div>
-        </a>
+          </a>
 
-        <a href="glpi.html" class="hub-card group flex flex-col p-8 md:p-10 rounded-3xl shadow-2xl">
-          <div class="flex flex-col items-center text-center flex-grow">
-            <div class="icon-container w-20 h-20 bg-gradient-to-br from-rose-500/30 to-rose-600/20 text-rose-400 rounded-2xl flex items-center justify-center mb-6 flex-shrink-0 shadow-lg shadow-rose-500/20">
-              <ion-icon name="build-outline" class="text-5xl"></ion-icon>
+          <a href="glpi.html" class="hub-card group flex flex-col p-5 md:p-6 rounded-2xl shadow-xl">
+            <div class="flex flex-col items-center text-center flex-grow">
+              <div class="icon-container w-14 h-14 bg-gradient-to-br from-rose-500/30 to-rose-600/20 text-rose-400 rounded-xl flex items-center justify-center mb-4 flex-shrink-0 shadow-lg shadow-rose-500/20">
+                <ion-icon name="build-outline" class="text-3xl"></ion-icon>
+              </div>
+              <h2 class="card-title text-lg font-bold text-white mb-2">Chamados GLPI</h2>
+              <p class="text-slate-400 text-xs leading-relaxed">Acompanhe chamados de suporte, SLA e métricas de atendimento.</p>
             </div>
-            <h2 class="card-title text-xl font-bold text-white mb-3">Chamados GLPI</h2>
-            <p class="text-slate-400 text-sm leading-relaxed">Acompanhe o status dos chamados de suporte, visualize o SLA e métricas de atendimento.</p>
-          </div>
-        </a>
-      </section>
+          </a>
+        </section>
+      </div>
     </div>
   </main>
 
-  <footer class="flex flex-col items-center justify-center p-6 mt-auto space-y-3 border-t border-slate-700/50 relative z-10">
+  <footer class="flex flex-col items-center justify-center p-6 mt-auto space-y-3 border-slate-700/50 relative z-10">
     <div class="logo-container flex items-center space-x-3">
       <img src="img/logo_rioave.png" alt="Logo Rio Ave" class="h-10">
       <span class="text-slate-500">|</span>
